@@ -17,6 +17,7 @@ import { AuthPanel } from "@/components/auth/auth-panel";
 import { Avatar } from "@/components/layout/UserMenu";
 import { isBookFinished } from "@/lib/bookStatus";
 import { AccountDataSection } from "@/components/account/delete-account";
+import { PrivacyLink } from "@/components/legal/privacy-link";
 
 /**
  * Diller kendi adlarıyla listelenir — yanlış dilde kalan bir kullanıcı
@@ -26,6 +27,14 @@ const LOCALES = [
   { code: "tr", label: "Türkçe" },
   { code: "en", label: "English" },
 ] as const;
+
+/**
+ * Firebase sağlayıcı kimliğini çeviri anahtarına çevirir. next-intl anahtarlarda
+ * "." kabul etmez (iç içe yol sayar); "google.com" → "google".
+ */
+function providerKey(providerId: string) {
+  return providerId.replace(/\.com$/, "").replace(/\./g, "_");
+}
 
 /** Dil seçimi: iki seçenek de görünür, aktif olan işaretli. */
 function LanguageField() {
@@ -85,7 +94,8 @@ function DisplayNameField({ value }: { value: string | null }) {
       await dispatch(updateDisplayName(draft)).unwrap();
       setEditing(false);
     } catch (reason) {
-      setError(typeof reason === "string" ? reason : t("nameError"));
+      console.error("[account]", reason);
+      setError(t("nameError"));
     } finally {
       setSaving(false);
     }
@@ -258,8 +268,8 @@ export function AccountPage() {
                 <dd className="flex flex-wrap gap-1.5 sm:justify-end">
                   {signInMethods.map((method) => (
                     <span key={method} className="sf-chip">
-                      {t.has(`providers.${method}`)
-                        ? t(`providers.${method}`)
+                      {t.has(`providers.${providerKey(method)}`)
+                        ? t(`providers.${providerKey(method)}`)
                         : method}
                     </span>
                   ))}
@@ -295,6 +305,10 @@ export function AccountPage() {
         </section>
 
         <AccountDataSection user={user} />
+
+        <p className="text-center text-xs text-white/50">
+          <PrivacyLink />
+        </p>
       </div>
     </div>
   );

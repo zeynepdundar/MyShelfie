@@ -200,14 +200,15 @@ export const updateDisplayName = createAsyncThunk(
   async (displayName: string, { rejectWithValue }) => {
     try {
       const current = auth.currentUser;
-      if (!current) throw new Error("Oturum bulunamadı");
+      if (!current) throw new Error("Not signed in");
 
       const trimmed = displayName.trim();
       await updateProfile(current, { displayName: trimmed || null });
 
       return trimmed || null;
-    } catch (err: any) {
-      return rejectWithValue(err?.message || "Görünen ad güncellenemedi");
+    } catch (err) {
+      console.error("[auth]", err);
+      return rejectWithValue("displayNameFailed");
     }
   }
 );
@@ -335,7 +336,7 @@ const authSlice = createSlice({
       })
       .addCase(updateDisplayName.rejected, (state, action) => {
         state.error =
-          (action.payload as string) || "Görünen ad güncellenemedi";
+          (action.payload as string) || "displayNameFailed";
       })
       .addCase(deleteAccount.fulfilled, (state) => {
         state.user = null;

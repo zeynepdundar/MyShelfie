@@ -20,7 +20,7 @@ import { isBookFinished } from "@/lib/bookStatus"
 
 /* Grafik renkleri temadan gelir; yüzey açık/koyu olduğunda kendiliğinden uyar. */
 const BOOKS_COLOR = "var(--chart-1)"
-const PAGES_COLOR = "#2DB872"
+const PAGES_COLOR = "var(--chart-2)"
 const CHART_TICK = "var(--sf-chart-tick)"
 const CHART_GRID = "var(--sf-chart-grid)"
 

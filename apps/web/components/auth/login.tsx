@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 
 import { GlassCard } from "@/components/ui/glass";
 import { AuthPanel } from "@/components/auth/auth-panel";
+import { PrivacyNotice } from "@/components/legal/privacy-link";
 
 interface AuthScreenProps {
   onBack?: () => void;
@@ -55,6 +56,8 @@ export function AuthScreen({ onBack, initialError }: AuthScreenProps) {
         </div>
 
         <AuthPanel initialError={initialError} />
+
+        <PrivacyNotice className="mt-6 border-t border-white/10 pt-4 text-center" />
       </GlassCard>
     </main>
   );

@@ -10,7 +10,10 @@ import { PageLoading } from "@/components/ui/glass";
 import { Sidebar, SidebarMobileBar } from "./Sidebar";
 
 /** Uygulamadaki gerçek sayfalar. Yeni bir sayfa eklenince buraya da eklenmeli. */
-const KNOWN_ROUTES = ["/", "/stats", "/treasures", "/account"];
+const KNOWN_ROUTES = ["/", "/stats", "/treasures", "/account", "/privacy"];
+
+/** Oturum açmadan da görülebilen sayfalar. */
+const PUBLIC_ROUTES = ["/", "/privacy"];
 
 interface LayoutProps {
   children: ReactNode;
@@ -31,7 +34,7 @@ export function HomeLayout({ children }: LayoutProps) {
   // Tanımlı olmayan yollar 404 sayfasını gösterir; oturum olmasa da oraya
   // yönlendirilmemeli, yoksa kullanıcı "sayfa bulunamadı" mesajını hiç görmez.
   const isKnownRoute = KNOWN_ROUTES.includes(withoutLocale);
-  const isPublicRoute = withoutLocale === "/" || !isKnownRoute;
+  const isPublicRoute = PUBLIC_ROUTES.includes(withoutLocale) || !isKnownRoute;
   const isResolved = status === "authenticated" || status === "unauthenticated";
 
   useEffect(() => {

@@ -10,9 +10,10 @@ import {
   Play,
   Plus,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 
 import type { AuthUser } from "@/lib/authSlice";
+import { formatDate } from "@/lib/format";
 import type { Book } from "@shelfie/types";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { addBook, fetchUserBooks, updateBook } from "@/lib/booksSlice";
@@ -47,20 +48,11 @@ function today() {
   return new Date().toISOString().split("T")[0];
 }
 
-function formatDate(value?: string | null) {
-  if (!value) return "-";
-  const parsed = new Date(value);
-  return Number.isNaN(parsed.getTime())
-    ? "-"
-    : parsed.toLocaleDateString(undefined, {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-      });
-}
 
 export function LibraryPage({ user }: LibraryPageProps) {
   const t = useTranslations("library");
+  const locale = useLocale();
+  const errorT = useTranslations("errors.books");
   const navT = useTranslations("nav");
   const statusT = useTranslations("book.status");
 
@@ -205,7 +197,11 @@ export function LibraryPage({ user }: LibraryPageProps) {
           </Button>
         </header>
 
-        {status === "failed" && <div className="sf-alert-error">{error}</div>}
+        {status === "failed" && (
+          <div className="sf-alert-error">
+            {error && errorT.has(error) ? errorT(error) : errorT("unknown")}
+          </div>
+        )}
 
         {/* Okumak İstediklerim — kitap kartları doğrudan arka planda (Favoriler gibi) */}
         <section className="min-w-0">
@@ -345,7 +341,7 @@ export function LibraryPage({ user }: LibraryPageProps) {
                       <div className="flex items-center gap-4">
                         <BookCover
                           src={coverUrl}
-                          alt={`${book.title} cover`}
+                          alt={t("coverAlt", { title: book.title })}
                           size="sm"
                         />
 
@@ -356,7 +352,7 @@ export function LibraryPage({ user }: LibraryPageProps) {
                           <p className="sf-body truncate">{book.author}</p>
                           <p className="sf-meta truncate">
                             {book.pages} {t("columns.pages")} ·{" "}
-                            {formatDate(book.startDate)}
+                            {(formatDate(book.startDate, locale) ?? "-")}
                           </p>
                         </div>
                       </div>
@@ -370,11 +366,11 @@ export function LibraryPage({ user }: LibraryPageProps) {
 
                       <div className="sf-muted">{book.pages}</div>
 
-                      <div className="sf-muted">{formatDate(book.startDate)}</div>
+                      <div className="sf-muted">{(formatDate(book.startDate, locale) ?? "-")}</div>
 
                       <div className="sf-muted">
                         {isBookFinished(book)
-                          ? formatDate(book.endDate || book.dateRead)
+                          ? (formatDate(book.endDate || book.dateRead, locale) ?? "-")
                           : "-"}
                       </div>
 

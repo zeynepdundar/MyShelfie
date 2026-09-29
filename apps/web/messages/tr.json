@@ -29,7 +29,9 @@
       "emptyTitle": "Henüz favori yok",
       "emptyBody": "İstatistikler sayfasında bir kitabı kalple işaretle, burada görünsün.",
       "addQuote": "Alıntı ekle",
-      "remove": "Favorilerden çıkar"
+      "remove": "Favorilerden çıkar",
+      "scrollLeft": "Sola kaydır",
+      "scrollRight": "Sağa kaydır"
     },
     "quotes": {
       "title": "Unutulmaz alıntılar",
@@ -91,7 +93,7 @@
     "providers": {
       "anonymous": "Misafir",
       "password": "E-posta",
-      "google.com": "Google"
+      "google": "Google"
     },
     "upgrade": {
       "title": "Hesabını kalıcı yap",
@@ -227,7 +229,8 @@
       "finish": "Bitirdim",
       "export": "CSV indir",
       "exportHint": "Bu listedeki kitapları CSV dosyası olarak indir"
-    }
+    },
+    "coverAlt": "{title} kapağı"
   },
   "stats": {
     "subtitle": "Okuma alışkanlıklarının yıllara ve aylara dağılımı.",
@@ -313,5 +316,34 @@
     "description": "Aradığın sayfa taşınmış, silinmiş ya da hiç var olmamış olabilir. Kitaplığına dönüp okumaya devam edebilirsin.",
     "home": "Ana sayfaya dön",
     "back": "Geri dön"
+  },
+  "legal": {
+    "privacyLink": "Gizlilik Politikası",
+    "notice": "Kişisel verilerinin nasıl işlendiğini <link>Gizlilik Politikası</link>'nda bulabilirsin.",
+    "backHome": "Ana sayfa",
+    "lastUpdated": "Son güncelleme: {date}",
+    "contents": "İçindekiler"
+  },
+  "errors": {
+    "books": {
+      "addFailed": "Kitap eklenemedi. Lütfen tekrar dene.",
+      "fetchFailed": "Kitapların yüklenemedi. Bağlantını kontrol edip sayfayı yenile.",
+      "updateFailed": "Değişiklik kaydedilemedi. Lütfen tekrar dene.",
+      "deleteFailed": "Kitap silinemedi. Lütfen tekrar dene.",
+      "unknown": "Bir şeyler ters gitti. Lütfen tekrar dene."
+    }
+  },
+  "welcome": {
+    "eyebrow": "Yıl yıl okuma serüvenin",
+    "titleStart": "Her kitap,",
+    "titleEnd": "hikâyenin bir parçası.",
+    "description": "Okuduğun kitapları takip et, favorilerini sakla ve okuma alışkanlıklarını zaman içinde keşfet.",
+    "getStarted": "Hemen başla",
+    "starting": "Başlatılıyor…",
+    "haveAccount": "Hesabım var",
+    "note": "Kayıt gerekmez — rafını istediğin zaman bir hesaba kaydedebilirsin."
+  },
+  "meta": {
+    "description": "Okuduğun kitapları takip et, alıntılarını sakla, okuma istatistiklerini gör."
   }
 }

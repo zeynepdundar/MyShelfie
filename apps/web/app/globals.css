@@ -20,6 +20,9 @@
 
   --sf-mint: #b8d8cf;
   --sf-mint-strong: #8fc4b6;
+  /* Parlak nane: karşılama başlığındaki vurgu + grafikteki ikinci seri (sayfa).
+     Sarıyla (#ffc703) ton ve renk körlüğü simülasyonunda net ayrışacak şekilde seçildi. */
+  --sf-mint-bright: #8fe1d3;
 
   --sf-success: #7fd1b0;
   --sf-danger: #ff8f8f;
@@ -148,7 +151,7 @@
 
   /* --- Grafik serileri (marka paletinden türetilmiştir) -------------------- */
   --chart-1: var(--sf-yellow-400);
-  --chart-2: var(--sf-mint);
+  --chart-2: var(--sf-mint-bright);
 
 }
 
@@ -175,6 +178,7 @@
   --color-control-hover: var(--sf-control-bg-hover);
   --color-control-border: var(--sf-control-border);
   --color-mint: var(--sf-mint);
+  --color-mint-bright: var(--sf-mint-bright);
 
   --color-hairline: var(--sf-line);
 

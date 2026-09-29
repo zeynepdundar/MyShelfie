@@ -1,22 +1,31 @@
 import type { Metadata } from "next";
 import { ReactNode } from 'react';
 import { NextIntlClientProvider } from 'next-intl';
-import { getMessages } from 'next-intl/server';
+import { getMessages, getTranslations } from 'next-intl/server';
 import ReduxProvider from '@/components/providers/redux-provider';
 import { AuthProvider } from '@/components/providers/auth-provider';
 import '../globals.css';
 import { HomeLayout } from "@/components/layout/HomeLayout";
 
 
-export const metadata: Metadata = {
-  title: "Shelfie",
-  description: "Track your reading journey",
-  icons: {
-    icon: "/logo-books.svg",
-    shortcut: "/logo-books.svg",
-    apple: "/logo-books.svg",
-  },
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "meta" });
+
+  return {
+    title: "Shelfie",
+    description: t("description"),
+    icons: {
+      icon: "/logo-books.svg",
+      shortcut: "/logo-books.svg",
+      apple: "/logo-books.svg",
+    },
+  };
+}
 
 export default async function RootLayout({
   children,

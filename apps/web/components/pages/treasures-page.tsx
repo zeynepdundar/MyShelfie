@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   ChevronDown,
@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 
 import { AppDispatch, RootState } from '@/lib/store';
+import { formatDate } from "@/lib/format";
 import { fetchUserBooks, updateBook } from '@/lib/booksSlice';
 import { AuthUser } from '@/lib/authSlice';
 import type { Quote } from '@shelfie/types';
@@ -38,19 +39,10 @@ type QuoteWithBook = Quote & { bookTitle?: string; bookAuthor?: string };
 /** Alıntılar kademeli gösterilir: önce bu kadar, sonra her tıkta bir o kadar daha. */
 const QUOTES_PAGE_SIZE = 12;
 
-function formatDate(value?: string) {
-  if (!value) return null;
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) return null;
-  return parsed.toLocaleDateString(undefined, {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  });
-}
 
 export function TreasuresPage({ user }: TreasuresPageProps) {
   const t = useTranslations('treasures');
+  const locale = useLocale();
   const statusT = useTranslations('book.status');
   const dispatch = useDispatch<AppDispatch>();
   const { books, status } = useSelector((state: RootState) => state.books);
@@ -270,7 +262,7 @@ export function TreasuresPage({ user }: TreasuresPageProps) {
                     <button
                       type="button"
                       onClick={() => scrollShelf('left')}
-                      aria-label="Scroll left"
+                      aria-label={t('favorites.scrollLeft')}
                       className="sf-icon-button"
                     >
                       <ChevronLeft className="h-4 w-4" />
@@ -278,7 +270,7 @@ export function TreasuresPage({ user }: TreasuresPageProps) {
                     <button
                       type="button"
                       onClick={() => scrollShelf('right')}
-                      aria-label="Scroll right"
+                      aria-label={t('favorites.scrollRight')}
                       className="sf-icon-button"
                     >
                       <ChevronRight className="h-4 w-4" />
@@ -374,7 +366,7 @@ export function TreasuresPage({ user }: TreasuresPageProps) {
             ) : (
               <div className="gap-6 px-1 pt-1 [column-fill:balance] sm:columns-2">
                 {visibleQuotes.map((quote) => {
-                  const addedAt = formatDate(quote.dateAdded);
+                  const addedAt = formatDate(quote.dateAdded, locale);
                   const isNew = quote.id === justAddedId;
 
                   return (
@@ -577,7 +569,7 @@ export function TreasuresPage({ user }: TreasuresPageProps) {
             <div className="sf-modal-footer">
               <p className="sf-meta">
                 {t('modal.savedOn', {
-                  date: formatDate(new Date().toISOString()) || '',
+                  date: formatDate(new Date().toISOString(), locale) || '',
                 })}
               </p>
               <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">

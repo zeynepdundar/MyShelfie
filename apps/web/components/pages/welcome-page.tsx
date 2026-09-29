@@ -1,8 +1,10 @@
 "use client";
 
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
+import { PrivacyLink } from "@/components/legal/privacy-link";
 
 interface WelcomeScreenProps {
   /** Kayıt formu olmadan misafir olarak başlatır. */
@@ -18,6 +20,8 @@ export function WelcomeScreen({
   onSignIn,
   starting = false,
 }: WelcomeScreenProps) {
+  const t = useTranslations("welcome");
+
   return (
     <main className="relative isolate flex min-h-dvh w-full flex-col overflow-hidden bg-transparent text-white">
       {/* Kitaplık arka planı body üzerinden gelir; burada sadece okunabilirlik katmanı var. */}
@@ -38,16 +42,15 @@ export function WelcomeScreen({
         className="mx-auto flex w-full max-w-7xl flex-1 items-center px-6 py-12 sm:px-10 sm:py-16 lg:px-16 lg:py-20"
       >
         <div className="max-w-xl">
-          <p className="mb-6 text-xs font-semibold uppercase tracking-[0.2em] text-accent-strong">YOUR READING LIFE, YEAR BY YEAR</p>
+          <p className="mb-6 text-xs font-semibold uppercase tracking-[0.2em] text-accent-strong">{t("eyebrow")}</p>
 
           <h1 id="welcome-heading" className="text-4xl font-semibold leading-[1.08] tracking-tight text-white sm:text-5xl lg:text-6xl">
-            Every book becomes part of
-            <span className="block text-mint">your story.</span>
+            {t("titleStart")}
+            <span className="block text-mint-bright">{t("titleEnd")}</span>
           </h1>
 
           <p className="mt-6 max-w-md text-base leading-relaxed text-white/70 sm:text-lg">
-            Keep track of the books you&apos;ve read, save your favorites, and
-            explore your reading habits over time.
+            {t("description")}
           </p>
 
           <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -58,7 +61,7 @@ export function WelcomeScreen({
               size="lg"
               className="w-full gap-3 sm:w-auto"
             >
-              {starting ? "Starting..." : "Get Started"}
+              {starting ? t("starting") : t("getStarted")}
               <svg
                 aria-hidden="true"
                 viewBox="0 0 24 24"
@@ -79,14 +82,19 @@ export function WelcomeScreen({
               size="lg"
               className="w-full sm:w-auto"
             >
-              I have an account
+              {t("haveAccount")}
             </Button>
           </div>
           <p className="mt-3 text-sm text-white/55">
-            No sign-up needed — save your shelf to an account whenever you like.
+            {t("note")}
           </p>
         </div>
       </section>
+
+      <footer className="mx-auto flex w-full max-w-7xl items-center gap-4 px-6 pb-8 text-xs text-white/50 sm:px-10 lg:px-16">
+        <span>© {new Date().getFullYear()} Shelfie</span>
+        <PrivacyLink />
+      </footer>
     </main>
   );
 }

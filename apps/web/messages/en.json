@@ -29,7 +29,9 @@
       "emptyTitle": "No favorites yet",
       "emptyBody": "Mark a book with a heart on the Statistics page and it will show up here.",
       "addQuote": "Add quote",
-      "remove": "Remove from favorites"
+      "remove": "Remove from favorites",
+      "scrollLeft": "Scroll left",
+      "scrollRight": "Scroll right"
     },
     "quotes": {
       "title": "Memorable quotes",
@@ -91,7 +93,7 @@
     "providers": {
       "anonymous": "Guest",
       "password": "Email",
-      "google.com": "Google"
+      "google": "Google"
     },
     "upgrade": {
       "title": "Keep your account",
@@ -227,7 +229,8 @@
       "finish": "Mark as finished",
       "export": "Export CSV",
       "exportHint": "Download the books in this list as a CSV file"
-    }
+    },
+    "coverAlt": "{title} cover"
   },
   "stats": {
     "subtitle": "How your reading is spread across years and months.",
@@ -313,5 +316,34 @@
     "description": "The page you're looking for may have been moved, removed, or never existed. Head back to your library and keep reading.",
     "home": "Back to home",
     "back": "Go back"
+  },
+  "legal": {
+    "privacyLink": "Privacy Policy",
+    "notice": "Learn how your personal data is handled in our <link>Privacy Policy</link>.",
+    "backHome": "Home",
+    "lastUpdated": "Last updated: {date}",
+    "contents": "Contents"
+  },
+  "errors": {
+    "books": {
+      "addFailed": "Couldn't add the book. Please try again.",
+      "fetchFailed": "Couldn't load your books. Check your connection and refresh the page.",
+      "updateFailed": "Couldn't save your change. Please try again.",
+      "deleteFailed": "Couldn't delete the book. Please try again.",
+      "unknown": "Something went wrong. Please try again."
+    }
+  },
+  "welcome": {
+    "eyebrow": "Your reading life, year by year",
+    "titleStart": "Every book becomes part of",
+    "titleEnd": "your story.",
+    "description": "Keep track of the books you've read, save your favorites, and explore your reading habits over time.",
+    "getStarted": "Get Started",
+    "starting": "Starting…",
+    "haveAccount": "I have an account",
+    "note": "No sign-up needed — save your shelf to an account whenever you like."
+  },
+  "meta": {
+    "description": "Track the books you read, keep your favorite quotes, and see your reading stats."
   }
 }

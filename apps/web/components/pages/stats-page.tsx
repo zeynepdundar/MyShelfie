@@ -6,7 +6,7 @@ import type { Book } from "@shelfie/types";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { fetchUserBooks } from "@/lib/booksSlice";
 import { CalendarDays } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { MyChart } from "../books/chartx";
 import {
   GlassCard,
@@ -20,23 +20,6 @@ interface StatsPageProps {
   user: AuthUser | null;
 }
 
-function formatDate(value?: string | null) {
-  if (!value) {
-    return "-";
-  }
-
-  const parsedDate = new Date(value);
-
-  if (Number.isNaN(parsedDate.getTime())) {
-    return "-";
-  }
-
-  return parsedDate.toLocaleDateString("tr-TR", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
-}
 
 function getRelevantDate(book: Book) {
   return book.endDate || book.dateRead || book.dateAdded;
@@ -56,6 +39,8 @@ function getBookDate(book: Book) {
 
 export function StatsPage({ user }: StatsPageProps) {
   const t = useTranslations("stats");
+  const locale = useLocale();
+  const errorT = useTranslations("errors.books");
   const navT = useTranslations("nav");
 
   const dispatch = useAppDispatch();
@@ -118,7 +103,7 @@ export function StatsPage({ user }: StatsPageProps) {
     },
     {
       title: t("pagesThisYear"),
-      value: pagesThisSelectedYear.toLocaleString("tr-TR"),
+      value: pagesThisSelectedYear.toLocaleString(locale),
       note: `${averagePagesPerCompletedBookInSelectedYear} avg / book`,
     },
     {
@@ -151,7 +136,11 @@ export function StatsPage({ user }: StatsPageProps) {
           ))}
         </div>
 
-        {status === "failed" && <div className="sf-alert-error">{error}</div>}
+        {status === "failed" && (
+          <div className="sf-alert-error">
+            {error && errorT.has(error) ? errorT(error) : errorT("unknown")}
+          </div>
+        )}
 
         {/* Yıllık grafik — başlık dışarıda, grafik cam kartın içinde */}
         <section className="min-w-0">

@@ -20,6 +20,9 @@ const initialState: BooksState = {
   error: null,
 };
 
+/* state.error bir hata KODU tutar (ör. "fetchFailed"); metne çeviri arayüzde
+   messages/*.json › errors.books altından yapılır. */
+
 // Kitap ekleme
 export const addBook = createAsyncThunk(
   "books/addBook",
@@ -27,7 +30,7 @@ export const addBook = createAsyncThunk(
     try {
       const user = auth.currentUser;
       if (!user) {
-        throw new Error("Kullanıcı giriş yapmamış");
+        throw new Error("Not signed in");
       }
 
       const bookId = Date.now().toString();
@@ -42,7 +45,8 @@ export const addBook = createAsyncThunk(
 
       return newBook;
     } catch (err: any) {
-      return rejectWithValue(err?.message || "Kitap eklenemedi");
+      console.error("[books]", err);
+      return rejectWithValue("addFailed");
     }
   }
 );
@@ -54,7 +58,7 @@ export const fetchUserBooks = createAsyncThunk(
     try {
       const user = auth.currentUser;
       if (!user) {
-        throw new Error("Kullanıcı giriş yapmamış");
+        throw new Error("Not signed in");
       }
 
       const booksRef = collection(db, "users", user.uid, "books");
@@ -67,7 +71,8 @@ export const fetchUserBooks = createAsyncThunk(
 
       return books;
     } catch (err: any) {
-      return rejectWithValue(err?.message || "Kitaplar getirilemedi");
+      console.error("[books]", err);
+      return rejectWithValue("fetchFailed");
     }
   }
 );
@@ -79,7 +84,7 @@ export const updateBook = createAsyncThunk(
     try {
       const user = auth.currentUser;
       if (!user) {
-        throw new Error("Kullanıcı giriş yapmamış");
+        throw new Error("Not signed in");
       }
 
       const bookRef = doc(db, "users", user.uid, "books", bookId);
@@ -87,7 +92,8 @@ export const updateBook = createAsyncThunk(
 
       return { bookId, updates };
     } catch (err: any) {
-      return rejectWithValue(err?.message || "Kitap güncellenemedi");
+      console.error("[books]", err);
+      return rejectWithValue("updateFailed");
     }
   }
 );
@@ -99,7 +105,7 @@ export const deleteBook = createAsyncThunk(
     try {
       const user = auth.currentUser;
       if (!user) {
-        throw new Error("Kullanıcı giriş yapmamış");
+        throw new Error("Not signed in");
       }
 
       const bookRef = doc(db, "users", user.uid, "books", bookId);
@@ -107,7 +113,8 @@ export const deleteBook = createAsyncThunk(
 
       return bookId;
     } catch (err: any) {
-      return rejectWithValue(err?.message || "Kitap silinemedi");
+      console.error("[books]", err);
+      return rejectWithValue("deleteFailed");
     }
   }
 );
@@ -138,7 +145,7 @@ const booksSlice = createSlice({
       })
       .addCase(addBook.rejected, (state, action) => {
         state.status = "failed";
-        state.error = (action.payload as string) || "Kitap eklenemedi";
+        state.error = (action.payload as string) || "addFailed";
       })
       // Fetch Books
       .addCase(fetchUserBooks.pending, (state) => {
@@ -151,7 +158,7 @@ const booksSlice = createSlice({
       })
       .addCase(fetchUserBooks.rejected, (state, action) => {
         state.status = "failed";
-        state.error = (action.payload as string) || "Kitaplar getirilemedi";
+        state.error = (action.payload as string) || "fetchFailed";
       })
       // Update Book
       .addCase(updateBook.pending, (state) => {
@@ -168,7 +175,7 @@ const booksSlice = createSlice({
       })
       .addCase(updateBook.rejected, (state, action) => {
         state.status = "failed";
-        state.error = (action.payload as string) || "Kitap güncellenemedi";
+        state.error = (action.payload as string) || "updateFailed";
       })
       // Delete Book
       .addCase(deleteBook.pending, (state) => {
@@ -181,7 +188,7 @@ const booksSlice = createSlice({
       })
       .addCase(deleteBook.rejected, (state, action) => {
         state.status = "failed";
-        state.error = (action.payload as string) || "Kitap silinemedi";
+        state.error = (action.payload as string) || "deleteFailed";
       });
   },
 });
