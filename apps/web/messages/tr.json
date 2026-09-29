@@ -97,6 +97,49 @@
       "title": "Hesabını kalıcı yap",
       "hint": "Google ya da e-posta bağla; kitapların ve alıntıların olduğu gibi kalır, başka cihazdan da girebilirsin.",
       "warning": "Misafir oturumundan çıkarsan bu hesaba ve kitaplarına bir daha ulaşamazsın."
+    },
+    "danger": {
+      "title": "Verilerin ve hesabın",
+      "hint": "Hesabını ve bütün verilerini buradan kalıcı olarak silebilirsin.",
+      "export": {
+        "title": "Verilerini indir",
+        "hint": "Bütün kitapların, notların ve alıntıların tek bir JSON dosyasında.",
+        "action": "İndir"
+      },
+      "delete": {
+        "title": "Hesabı sil",
+        "hint": "Hesabın ve bütün verilerin kalıcı olarak silinir. Bu işlem geri alınamaz.",
+        "hintGuest": "Misafir hesabın ve eklediğin bütün kitaplar kalıcı olarak silinir.",
+        "action": "Hesabımı sil"
+      },
+      "dialog": {
+        "title": "Hesabını sil",
+        "subtitle": "Bu işlem geri alınamaz.",
+        "whatGoes": "Silinecekler",
+        "itemBooks": "{count, plural, =0 {Kütüphanen (şu an boş)} other {# kitap, notların, alıntıların ve favorilerin}}",
+        "itemAccount": "Hesap bilgilerin: ad, e-posta ve giriş yöntemleri",
+        "exportFirst": "Silmeden önce bir kopyasını almak ister misin?",
+        "exportLink": "Verilerimi indir",
+        "confirmWord": "SİL",
+        "confirmLabel": "Onaylamak için <strong>{word}</strong> yaz",
+        "passwordLabel": "Şifren",
+        "googleNote": "Devam ettiğinde güvenlik için Google hesabınla yeniden doğrulaman istenecek.",
+        "cancel": "Vazgeç",
+        "submit": "Hesabımı kalıcı olarak sil",
+        "deleting": "Siliniyor…",
+        "errors": {
+          "wrongPassword": "Şifre hatalı. Tekrar dene.",
+          "popupClosed": "Doğrulama penceresi kapatıldı. Silmek için doğrulamayı tamamla.",
+          "popupBlocked": "Tarayıcı doğrulama penceresini engelledi. Açılır pencerelere izin verip tekrar dene.",
+          "userMismatch": "Farklı bir Google hesabı seçtin. Bu hesaba bağlı Google hesabıyla doğrula.",
+          "tooManyRequests": "Çok fazla deneme yapıldı. Biraz bekleyip tekrar dene.",
+          "network": "Bağlantı kurulamadı. İnternetini kontrol edip tekrar dene.",
+          "recentLogin": "Güvenlik için çıkış yapıp yeniden giriş yapman, ardından tekrar denemen gerekiyor.",
+          "unknown": "Hesap silinemedi. Lütfen tekrar dene."
+        }
+      },
+      "deletedNotice": "Hesabın ve bütün verilerin silindi. Shelfie'yi kullandığın için teşekkürler.",
+      "dismiss": "Kapat"
     }
   },
   "book": {

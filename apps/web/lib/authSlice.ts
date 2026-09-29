@@ -3,8 +3,11 @@ import {
   EmailAuthProvider,
   GoogleAuthProvider,
   createUserWithEmailAndPassword,
+  deleteUser,
   linkWithCredential,
   linkWithPopup,
+  reauthenticateWithCredential,
+  reauthenticateWithPopup,
   sendPasswordResetEmail,
   signInAnonymously,
   signInWithEmailAndPassword,
@@ -15,6 +18,7 @@ import {
 } from "firebase/auth";
 
 import { auth } from "@/lib/firebase";
+import { deleteUserData } from "@/lib/accountData";
 
 /* ============================================================================
    Kimlik doğrulama
@@ -213,6 +217,71 @@ export const signOutUser = createAsyncThunk("auth/signOutUser", async () => {
   return null;
 });
 
+/** Silmeden önce kimliğin nasıl yeniden doğrulanacağı. */
+export type DeleteVerification = "none" | "google" | "password";
+
+export function deleteVerificationFor(user: AuthUser): DeleteVerification {
+  if (user.isAnonymous) return "none";
+  // Google tek tıkla doğrular; ikisi de bağlıysa şifre sormaya gerek yok
+  if (user.providers.includes("google.com")) return "google";
+  if (user.providers.includes("password")) return "password";
+  return "none";
+}
+
+/**
+ * Hesabı ve bütün verisini kalıcı olarak siler.
+ *
+ * Sıra önemli:
+ * 1. Önce kimlik yeniden doğrulanır. Firebase hassas işlemler için yakın
+ *    zamanda giriş ister ("auth/requires-recent-login"); bunu en başta
+ *    yapınca veri silinip hesap silinemeden kalma riski ortadan kalkar.
+ * 2. Firestore verisi silinir. Kurallar yalnızca oturum sahibine izin
+ *    verdiği için bu, hesap silinmeden ÖNCE olmalı.
+ * 3. Firebase Auth kullanıcısı silinir; onAuthStateChanged oturumu kapatır.
+ */
+export const deleteAccount = createAsyncThunk(
+  "auth/deleteAccount",
+  async ({ password }: { password?: string }, { rejectWithValue }) => {
+    try {
+      const current = auth.currentUser;
+      if (!current) throw { code: "auth/no-current-user" };
+
+      const verification = deleteVerificationFor(mapFirebaseUser(current)!);
+
+      if (verification === "google") {
+        await reauthenticateWithPopup(current, googleProvider());
+      } else if (verification === "password") {
+        if (!current.email || !password) throw { code: "auth/missing-password" };
+        await reauthenticateWithCredential(
+          current,
+          EmailAuthProvider.credential(current.email, password)
+        );
+      }
+
+      await deleteUserData(current.uid);
+
+      try {
+        await deleteUser(current);
+      } catch (error) {
+        // Misafir hesap yeniden doğrulanamaz. Verisi az önce silindiği için
+        // boş kalan anonim kullanıcıdan çıkış yapmak yeterli.
+        if (
+          verification === "none" &&
+          errorCode(error) === "auth/requires-recent-login"
+        ) {
+          await signOut(auth);
+          return null;
+        }
+        throw error;
+      }
+
+      return null;
+    } catch (error) {
+      return rejectWithValue(errorCode(error));
+    }
+  }
+);
+
 /* Oturum açan/bağlayan thunk'lar aynı şekilde işlenir.
    pending'de status "loading" YAPILMAZ: HomeLayout loading'de sayfayı
    yükleniyor ekranıyla değiştirir; giriş formu kaybolur, hata gösterilemezdi.
@@ -267,6 +336,11 @@ const authSlice = createSlice({
       .addCase(updateDisplayName.rejected, (state, action) => {
         state.error =
           (action.payload as string) || "Görünen ad güncellenemedi";
+      })
+      .addCase(deleteAccount.fulfilled, (state) => {
+        state.user = null;
+        state.status = "unauthenticated";
+        state.error = null;
       })
       .addCase(signOutUser.pending, (state) => {
         state.status = "loading";

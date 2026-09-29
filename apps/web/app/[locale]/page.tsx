@@ -9,6 +9,7 @@ import { continueAsGuest } from "@/lib/authSlice";
 import { AuthScreen } from "@/components/auth/login";
 import { WelcomeScreen } from "@/components/pages/welcome-page";
 import { LibraryPage } from "@/components/pages/library-page";
+import { AccountDeletedNotice } from "@/components/account/delete-account";
 
 /**
  * Kök sayfa: oturum varsa Kütüphane, yoksa karşılama ekranı.
@@ -56,10 +57,13 @@ export default function Home() {
   }
 
   return (
-    <WelcomeScreen
-      onGetStarted={() => void startAsGuest()}
-      onSignIn={() => setShowAuth(true)}
-      starting={startingGuest}
-    />
+    <>
+      <AccountDeletedNotice />
+      <WelcomeScreen
+        onGetStarted={() => void startAsGuest()}
+        onSignIn={() => setShowAuth(true)}
+        starting={startingGuest}
+      />
+    </>
   );
 }

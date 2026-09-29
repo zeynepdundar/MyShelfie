@@ -10,11 +10,13 @@ import { Check, LogOut, Pencil, X } from "lucide-react";
 import type { RootState } from "@/lib/store";
 import { useAppDispatch } from "@/lib/hooks";
 import { signOutUser, updateDisplayName } from "@/lib/authSlice";
+import { fetchUserBooks } from "@/lib/booksSlice";
 import { Button } from "@/components/ui/button";
 import { GlassCard, SectionHeader } from "@/components/ui/glass";
 import { AuthPanel } from "@/components/auth/auth-panel";
 import { Avatar } from "@/components/layout/UserMenu";
 import { isBookFinished } from "@/lib/bookStatus";
+import { AccountDataSection } from "@/components/account/delete-account";
 
 /**
  * Diller kendi adlarıyla listelenir — yanlış dilde kalan bir kullanıcı
@@ -165,6 +167,13 @@ export function AccountPage() {
   const user = useSelector((state: RootState) => state.auth.user);
   const books = useSelector((state: RootState) => state.books.books);
 
+  // Sayfa doğrudan açıldığında (yenileme, link) kitaplar henüz yüklenmemiş
+  // olabilir; tamamlanan sayısı ve silme penceresindeki kitap sayısı buna bağlı.
+  const uid = user?.uid;
+  useEffect(() => {
+    if (uid) dispatch(fetchUserBooks());
+  }, [uid, dispatch]);
+
   if (!user) return null;
 
   const name = user.isAnonymous
@@ -284,6 +293,8 @@ export function AccountPage() {
             </dl>
           </GlassCard>
         </section>
+
+        <AccountDataSection user={user} />
       </div>
     </div>
   );

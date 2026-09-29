@@ -97,6 +97,49 @@
       "title": "Keep your account",
       "hint": "Link Google or an email; your books and quotes stay exactly as they are, and you can sign in from other devices.",
       "warning": "If you sign out of the guest session, you won't be able to get back to this account or its books."
+    },
+    "danger": {
+      "title": "Your data and account",
+      "hint": "You can permanently delete your account and all your data here.",
+      "export": {
+        "title": "Download your data",
+        "hint": "All your books, notes and quotes in a single JSON file.",
+        "action": "Download"
+      },
+      "delete": {
+        "title": "Delete account",
+        "hint": "Your account and all your data will be permanently deleted. This can't be undone.",
+        "hintGuest": "Your guest account and every book you've added will be permanently deleted.",
+        "action": "Delete my account"
+      },
+      "dialog": {
+        "title": "Delete your account",
+        "subtitle": "This can't be undone.",
+        "whatGoes": "What will be deleted",
+        "itemBooks": "{count, plural, =0 {Your library (currently empty)} one {# book, with your notes, quotes and favorites} other {# books, with your notes, quotes and favorites}}",
+        "itemAccount": "Your account details: name, email and sign-in methods",
+        "exportFirst": "Want to keep a copy before deleting?",
+        "exportLink": "Download my data",
+        "confirmWord": "DELETE",
+        "confirmLabel": "Type <strong>{word}</strong> to confirm",
+        "passwordLabel": "Your password",
+        "googleNote": "When you continue, you'll be asked to verify with your Google account for security.",
+        "cancel": "Cancel",
+        "submit": "Permanently delete my account",
+        "deleting": "Deleting…",
+        "errors": {
+          "wrongPassword": "Incorrect password. Please try again.",
+          "popupClosed": "The verification window was closed. Complete verification to delete.",
+          "popupBlocked": "Your browser blocked the verification window. Allow pop-ups and try again.",
+          "userMismatch": "You picked a different Google account. Verify with the one linked to this account.",
+          "tooManyRequests": "Too many attempts. Please wait a moment and try again.",
+          "network": "Couldn't connect. Check your internet connection and try again.",
+          "recentLogin": "For security, sign out and sign back in, then try again.",
+          "unknown": "Couldn't delete your account. Please try again."
+        }
+      },
+      "deletedNotice": "Your account and all your data have been deleted. Thanks for using Shelfie.",
+      "dismiss": "Dismiss"
     }
   },
   "book": {
