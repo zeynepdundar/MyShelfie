@@ -203,7 +203,13 @@
       "monthBooks": "{count} kitap",
       "totalPages": "Toplam Sayfa",
       "booksThatMonth": "O Ay Okunanlar",
-      "none": "Kitap yok"
+      "none": "Kitap yok",
+      "booksSeries": "Okunan kitap",
+      "pagesSeries": "Okunan sayfa",
+      "leftAxis": "sol eksen",
+      "rightAxis": "sağ eksen",
+      "emptyYear": "{year} yılında henüz bitirilen kitap yok",
+      "hoverHint": "Ayrıntıları görmek için bir ayın üzerine gel."
     }
   },
   "auth": {

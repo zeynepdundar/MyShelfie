@@ -3,55 +3,29 @@
 import { useMemo, useState } from "react"
 import {
   Bar,
-  BarChart,
   CartesianGrid,
   Cell,
-  Legend,
+  ComposedChart,
+  Line,
   XAxis,
   YAxis,
 } from "recharts"
 import { useSelector } from "react-redux"
-import { useTranslations } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 
 import { RootState } from "@/lib/store"
 import type { Book } from "@shelfie/types"
-import { ChartContainer, ChartLegendContent } from "@/components/ui/chart"
+import { ChartContainer } from "@/components/ui/chart"
 import { isBookFinished } from "@/lib/bookStatus"
 
-const MONTHS = [
-  { name: "Oca", monthIndex: 0 },
-  { name: "Şub", monthIndex: 1 },
-  { name: "Mar", monthIndex: 2 },
-  { name: "Nis", monthIndex: 3 },
-  { name: "May", monthIndex: 4 },
-  { name: "Haz", monthIndex: 5 },
-  { name: "Tem", monthIndex: 6 },
-  { name: "Ağu", monthIndex: 7 },
-  { name: "Eyl", monthIndex: 8 },
-  { name: "Eki", monthIndex: 9 },
-  { name: "Kas", monthIndex: 10 },
-  { name: "Ara", monthIndex: 11 },
-]
-
 /* Grafik renkleri temadan gelir; yüzey açık/koyu olduğunda kendiliğinden uyar. */
-const CHART_ACCENT = "var(--chart-1)"
-const CHART_SECOND = "var(--chart-2)"
+const BOOKS_COLOR = "var(--chart-1)"
+const PAGES_COLOR = "#2DB872"
 const CHART_TICK = "var(--sf-chart-tick)"
 const CHART_GRID = "var(--sf-chart-grid)"
 
-/** Üzerine gelinmeyen sütunlar soluklaşsın, aktif olan öne çıksın. */
+/** Üzerine gelinmeyen aylar soluklaşsın, aktif olan öne çıksın. */
 const DIMMED = 0.35
-
-const chartConfig = {
-  value: {
-    label: "Books Read",
-    color: CHART_ACCENT,
-  },
-  pages: {
-    label: "Number of Pages",
-    color: CHART_SECOND,
-  },
-}
 
 function getBookDate(book: Book) {
   const rawDate = book.endDate || book.dateRead || book.dateAdded
@@ -63,118 +37,192 @@ function getBookDate(book: Book) {
 export function MyChart({ year }: { year: number }) {
   const { books } = useSelector((state: RootState) => state.books)
   const t = useTranslations("stats.chart")
+  const locale = useLocale()
   const [activeIndex, setActiveIndex] = useState<number | null>(null)
 
-  const chartData = useMemo(
-    () =>
-      MONTHS.map((month) => {
-        const monthlyBooks = books.filter((book) => {
-          if (!isBookFinished(book)) {
-            return false
-          }
+  const chartData = useMemo(() => {
+    const monthFormatter = new Intl.DateTimeFormat(locale, { month: "short" })
 
-          const bookDate = getBookDate(book)
-
-          return (
-            bookDate !== null &&
-            bookDate.getFullYear() === year &&
-            bookDate.getMonth() === month.monthIndex
-          )
-        })
-
-        return {
-          name: month.name,
-          value: monthlyBooks.length,
-          pages: monthlyBooks.reduce((sum, book) => sum + (book.pages || 0), 0),
-          titles: monthlyBooks.map((book) => book.title),
+    return Array.from({ length: 12 }, (_, monthIndex) => {
+      const monthlyBooks = books.filter((book) => {
+        if (!isBookFinished(book)) {
+          return false
         }
-      }),
-    [books, year]
-  )
 
+        const bookDate = getBookDate(book)
+
+        return (
+          bookDate !== null &&
+          bookDate.getFullYear() === year &&
+          bookDate.getMonth() === monthIndex
+        )
+      })
+
+      return {
+        name: monthFormatter.format(new Date(year, monthIndex, 1)),
+        books: monthlyBooks.length,
+        pages: monthlyBooks.reduce((sum, book) => sum + (book.pages || 0), 0),
+        titles: monthlyBooks.map((book) => book.title),
+      }
+    })
+  }, [books, year, locale])
+
+  const chartConfig = {
+    books: { label: t("booksSeries"), color: BOOKS_COLOR },
+    pages: { label: t("pagesSeries"), color: PAGES_COLOR },
+  }
+
+  const isEmpty = chartData.every((month) => month.books === 0)
   const active = activeIndex === null ? null : chartData[activeIndex]
+  const numberFormat = (value: number) => value.toLocaleString(locale)
+  const opacityFor = (index: number) =>
+    activeIndex === null || activeIndex === index ? 1 : DIMMED
 
   return (
     <div>
-      <ChartContainer config={chartConfig} className="h-[320px] w-full">
-        <BarChart
-          data={chartData}
-          margin={{ top: 8, right: 8, left: -8, bottom: 0 }}
-          onMouseMove={(state: { activeTooltipIndex?: number }) => {
-            const next = state?.activeTooltipIndex
-            setActiveIndex(typeof next === "number" ? next : null)
-          }}
-          onMouseLeave={() => setActiveIndex(null)}
-        >
-          <CartesianGrid vertical={false} strokeDasharray="3 3" stroke={CHART_GRID} />
-          <XAxis
-            dataKey="name"
-            tickLine={false}
-            axisLine={false}
-            tickMargin={12}
-            tick={{ fill: CHART_TICK, fontSize: 12 }}
+      {/* Eksen anahtarı: hangi eksenin neyi gösterdiği grafiğin hemen üstünde,
+          ilgili kenara hizalı ve serinin rengiyle. */}
+      <div className="mb-3 flex items-start justify-between gap-4 text-xs">
+        <div className="flex items-center gap-2">
+          <span
+            aria-hidden
+            className="h-3 w-3 rounded-[3px]"
+            style={{ backgroundColor: BOOKS_COLOR }}
           />
-          <YAxis
-            yAxisId="left"
-            tickLine={false}
-            axisLine={false}
-            tickMargin={8}
-            tickFormatter={(value) => Math.round(value).toString()}
-            tick={{ fill: CHART_TICK, fontSize: 12 }}
-          />
-          <YAxis
-            yAxisId="right"
-            tickLine={false}
-            axisLine={false}
-            tickMargin={8}
-            tickFormatter={(value) => Math.round(value).toString()}
-            orientation="right"
-            tick={{ fill: CHART_TICK, fontSize: 12 }}
-          />
-          <Bar dataKey="value" yAxisId="left" radius={[6, 6, 0, 0]}>
-            {chartData.map((entry, index) => (
-              <Cell
-                key={`books-${entry.name}`}
-                fill={CHART_ACCENT}
-                fillOpacity={
-                  activeIndex === null || activeIndex === index ? 1 : DIMMED
-                }
-              />
-            ))}
-          </Bar>
-          <Bar dataKey="pages" yAxisId="right" radius={[6, 6, 0, 0]}>
-            {chartData.map((entry, index) => (
-              <Cell
-                key={`pages-${entry.name}`}
-                fill={CHART_SECOND}
-                fillOpacity={
-                  activeIndex === null || activeIndex === index ? 1 : DIMMED
-                }
-              />
-            ))}
-          </Bar>
-          <Legend content={<ChartLegendContent />} verticalAlign="bottom" />
-        </BarChart>
-      </ChartContainer>
+          <span className="font-medium text-foreground">{t("booksSeries")}</span>
+          <span className="text-muted-foreground">· {t("leftAxis")}</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-muted-foreground">{t("rightAxis")} ·</span>
+          <span className="font-medium text-foreground">{t("pagesSeries")}</span>
+          <span aria-hidden className="relative flex h-3 w-5 items-center">
+            <span
+              className="h-0.5 w-full rounded-full"
+              style={{ backgroundColor: PAGES_COLOR }}
+            />
+            <span
+              className="absolute left-1/2 h-2 w-2 -translate-x-1/2 rounded-full"
+              style={{ backgroundColor: PAGES_COLOR }}
+            />
+          </span>
+        </div>
+      </div>
+
+      <div className="relative">
+        <ChartContainer config={chartConfig} className="h-[320px] w-full">
+          <ComposedChart
+            data={chartData}
+            margin={{ top: 8, right: 0, left: 0, bottom: 0 }}
+            onMouseMove={(state: { activeTooltipIndex?: number }) => {
+              const next = state?.activeTooltipIndex
+              setActiveIndex(typeof next === "number" ? next : null)
+            }}
+            onMouseLeave={() => setActiveIndex(null)}
+          >
+            <CartesianGrid vertical={false} strokeDasharray="3 3" stroke={CHART_GRID} />
+            <XAxis
+              dataKey="name"
+              tickLine={false}
+              axisLine={false}
+              tickMargin={12}
+              tick={{ fill: CHART_TICK, fontSize: 12 }}
+            />
+            {/* Sol eksen: kitap adedi — yalnızca tam sayılar. */}
+            <YAxis
+              yAxisId="books"
+              allowDecimals={false}
+              domain={[0, (dataMax: number) => Math.max(dataMax, 1)]}
+              width={32}
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              tick={{ fill: BOOKS_COLOR, fontSize: 12 }}
+            />
+            {/* Sağ eksen: sayfa sayısı. */}
+            <YAxis
+              yAxisId="pages"
+              orientation="right"
+              allowDecimals={false}
+              domain={[0, (dataMax: number) => Math.max(dataMax, 100)]}
+              width={48}
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              tickFormatter={numberFormat}
+              tick={{ fill: PAGES_COLOR, fontSize: 12 }}
+            />
+            <Bar
+              dataKey="books"
+              yAxisId="books"
+              radius={[6, 6, 0, 0]}
+              maxBarSize={36}
+              isAnimationActive={false}
+            >
+              {chartData.map((entry, index) => (
+                <Cell
+                  key={`books-${entry.name}`}
+                  fill={BOOKS_COLOR}
+                  fillOpacity={opacityFor(index)}
+                />
+              ))}
+            </Bar>
+            <Line
+              dataKey="pages"
+              yAxisId="pages"
+              type="monotone"
+              stroke={PAGES_COLOR}
+              strokeWidth={2.5}
+              isAnimationActive={false}
+              dot={(props: { cx?: number; cy?: number; index?: number }) => (
+                <circle
+                  key={`pages-dot-${props.index}`}
+                  cx={props.cx}
+                  cy={props.cy}
+                  r={activeIndex === props.index ? 5.5 : 3.5}
+                  fill={PAGES_COLOR}
+                  stroke="var(--background)"
+                  strokeWidth={2}
+                  opacity={opacityFor(props.index ?? 0)}
+                />
+              )}
+              activeDot={false}
+            />
+          </ComposedChart>
+        </ChartContainer>
+
+        {isEmpty && (
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+            <p className="rounded-full bg-background/70 px-4 py-2 text-sm text-muted-foreground backdrop-blur">
+              {t("emptyYear", { year })}
+            </p>
+          </div>
+        )}
+      </div>
 
       {/* Hover detay şeridi — sadece bir aya gelindiğinde görünür.
           Dış kapsayıcı yüksekliği ayırdığı için grafik zıplamaz. */}
       <div className="mt-3 min-h-[3.25rem]">
-        {active && (
+        {active ? (
           <div className="grid grid-cols-1 gap-4 border-t border-white/10 pt-3 sm:grid-cols-[auto_auto_minmax(0,1fr)] sm:gap-8">
             <div>
               <p className="text-xs text-white/45">
                 {active.name} {year}
               </p>
-              <p className="mt-0.5 text-sm font-medium text-white">
-                {t("monthBooks", { count: active.value })}
+              <p
+                className="mt-0.5 text-sm font-medium"
+                style={{ color: BOOKS_COLOR }}
+              >
+                {t("monthBooks", { count: active.books })}
               </p>
             </div>
 
             <div>
               <p className="text-xs text-white/45">{t("totalPages")}</p>
-              <p className="mt-0.5 text-sm font-medium text-white">
-                {active.pages.toLocaleString("tr-TR")}
+              <p
+                className="mt-0.5 text-sm font-medium"
+                style={{ color: PAGES_COLOR }}
+              >
+                {numberFormat(active.pages)}
               </p>
             </div>
 
@@ -185,6 +233,12 @@ export function MyChart({ year }: { year: number }) {
               </p>
             </div>
           </div>
+        ) : (
+          !isEmpty && (
+            <p className="border-t border-white/10 pt-3 text-xs text-white/45">
+              {t("hoverHint")}
+            </p>
+          )
         )}
       </div>
     </div>

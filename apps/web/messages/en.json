@@ -203,7 +203,13 @@
       "monthBooks": "{count} books",
       "totalPages": "Total Pages",
       "booksThatMonth": "Read That Month",
-      "none": "No books"
+      "none": "No books",
+      "booksSeries": "Books read",
+      "pagesSeries": "Pages read",
+      "leftAxis": "left axis",
+      "rightAxis": "right axis",
+      "emptyYear": "No finished books in {year} yet",
+      "hoverHint": "Hover over a month to see details."
     }
   },
   "auth": {
