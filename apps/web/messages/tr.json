@@ -264,5 +264,11 @@
       "unauthorized-domain": "Bu adres Firebase'de yetkili değil. Authentication → Settings → Authorized domains listesine ekle.",
       "unknownWithCode": "Bir şeyler ters gitti ({code}). Tekrar dene."
     }
+  },
+  "notFound": {
+    "title": "Bu sayfa rafta yok",
+    "description": "Aradığın sayfa taşınmış, silinmiş ya da hiç var olmamış olabilir. Kitaplığına dönüp okumaya devam edebilirsin.",
+    "home": "Ana sayfaya dön",
+    "back": "Geri dön"
   }
 }

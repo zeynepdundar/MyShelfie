@@ -264,5 +264,11 @@
       "unauthorized-domain": "This address isn't authorized in Firebase. Add it under Authentication → Settings → Authorized domains.",
       "unknownWithCode": "Something went wrong ({code}). Please try again."
     }
+  },
+  "notFound": {
+    "title": "This page isn't on the shelf",
+    "description": "The page you're looking for may have been moved, removed, or never existed. Head back to your library and keep reading.",
+    "home": "Back to home",
+    "back": "Go back"
   }
 }

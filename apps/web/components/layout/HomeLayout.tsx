@@ -9,6 +9,9 @@ import type { RootState } from "@/lib/store";
 import { PageLoading } from "@/components/ui/glass";
 import { Sidebar, SidebarMobileBar } from "./Sidebar";
 
+/** Uygulamadaki gerçek sayfalar. Yeni bir sayfa eklenince buraya da eklenmeli. */
+const KNOWN_ROUTES = ["/", "/stats", "/treasures", "/account"];
+
 interface LayoutProps {
   children: ReactNode;
 }
@@ -25,7 +28,10 @@ export function HomeLayout({ children }: LayoutProps) {
 
   // Kök sayfa kendi içinde karşılama/giriş ekranını yönetiyor; korumalı olan
   // diğer sayfalar oturum kapanınca oraya dönmeli, yoksa boş sayfada kalınır.
-  const isPublicRoute = withoutLocale === "/";
+  // Tanımlı olmayan yollar 404 sayfasını gösterir; oturum olmasa da oraya
+  // yönlendirilmemeli, yoksa kullanıcı "sayfa bulunamadı" mesajını hiç görmez.
+  const isKnownRoute = KNOWN_ROUTES.includes(withoutLocale);
+  const isPublicRoute = withoutLocale === "/" || !isKnownRoute;
   const isResolved = status === "authenticated" || status === "unauthenticated";
 
   useEffect(() => {
