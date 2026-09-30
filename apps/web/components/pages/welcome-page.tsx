@@ -34,7 +34,7 @@ export function WelcomeScreen({
         <span className="flex size-10 items-center justify-center rounded-tile border border-white/20 bg-white/10 backdrop-blur-md">
           <Image src="/logo-books.svg" alt="" width={22} height={22} />
         </span>
-        <span className="text-lg font-semibold tracking-tight">Shelfie</span>
+        <span className="text-lg font-semibold tracking-tight">MyShelfie</span>
       </header>
 
       <section
@@ -92,7 +92,7 @@ export function WelcomeScreen({
       </section>
 
       <footer className="mx-auto flex w-full max-w-7xl items-center gap-4 px-6 pb-8 text-xs text-white/50 sm:px-10 lg:px-16">
-        <span>© {new Date().getFullYear()} Shelfie</span>
+        <span>© {new Date().getFullYear()} MyShelfie</span>
         <PrivacyLink />
       </footer>
     </main>

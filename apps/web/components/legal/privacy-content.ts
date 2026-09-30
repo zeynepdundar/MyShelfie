@@ -30,13 +30,13 @@ export interface PrivacyContent {
 const tr: PrivacyContent = {
   title: "Gizlilik Politikası",
   intro:
-    "Shelfie, okuduğun kitapları takip etmen için geliştirilmiş kişisel bir uygulamadır. Yalnızca uygulamanın çalışması için gereken verileri toplar. Reklam göstermez, verilerini satmaz ve seni izleyen analiz ya da reklam araçları kullanmaz. Bu metin, 6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) ve AB Genel Veri Koruma Tüzüğü (GDPR) kapsamında seni bilgilendirmek için hazırlanmıştır.",
+    "MyShelfie, okuduğun kitapları takip etmen için geliştirilmiş kişisel bir uygulamadır. Yalnızca uygulamanın çalışması için gereken verileri toplar. Reklam göstermez, verilerini satmaz ve seni izleyen analiz ya da reklam araçları kullanmaz. Bu metin, 6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) ve AB Genel Veri Koruma Tüzüğü (GDPR) kapsamında seni bilgilendirmek için hazırlanmıştır.",
   sections: [
     {
       id: "controller",
       title: "Veri sorumlusu",
       paragraphs: [
-        "Kişisel verilerinin veri sorumlusu, Shelfie'yi bireysel olarak geliştiren {controller}'dır. Bu politikayla ilgili her soru ve talep için {email} adresine yazabilirsin.",
+        "Kişisel verilerinin veri sorumlusu, MyShelfie'yi bireysel olarak geliştiren {controller}'dır. Bu politikayla ilgili her soru ve talep için {email} adresine yazabilirsin.",
       ],
     },
     {
@@ -57,7 +57,7 @@ const tr: PrivacyContent = {
         },
         {
           term: "Kitap aramaları",
-          text: "Kitap eklerken yazdığın arama metni, sonuçları getirmek için Google Books'a gönderilir. Shelfie bu aramaları saklamaz.",
+          text: "Kitap eklerken yazdığın arama metni, sonuçları getirmek için Google Books'a gönderilir. MyShelfie bu aramaları saklamaz.",
         },
         {
           term: "Teknik kayıtlar",
@@ -119,7 +119,7 @@ const tr: PrivacyContent = {
       id: "cookies",
       title: "Çerezler ve tarayıcı depolaması",
       paragraphs: [
-        "Shelfie yalnızca uygulamanın çalışması için zorunlu olanları kullanır:",
+        "MyShelfie yalnızca uygulamanın çalışması için zorunlu olanları kullanır:",
       ],
       items: [
         { term: "Dil tercihi", text: "Seçtiğin dili hatırlayan bir çerez (NEXT_LOCALE)." },
@@ -150,7 +150,7 @@ const tr: PrivacyContent = {
       id: "children",
       title: "Çocuklar",
       paragraphs: [
-        "Shelfie çocuklara yönelik değildir. 13 yaşından küçüksen Shelfie'yi kullanma. Bir çocuğa ait veri topladığımızı fark edersek bu verileri sileriz.",
+        "MyShelfie çocuklara yönelik değildir. 13 yaşından küçüksen MyShelfie'yi kullanma. Bir çocuğa ait veri topladığımızı fark edersek bu verileri sileriz.",
       ],
     },
     {
@@ -166,13 +166,13 @@ const tr: PrivacyContent = {
 const en: PrivacyContent = {
   title: "Privacy Policy",
   intro:
-    "Shelfie is a personal app for keeping track of the books you read. It only collects the data it needs to work. It doesn't show ads, doesn't sell your data, and doesn't use analytics or advertising tools that track you. This policy explains how your data is handled under the Turkish Personal Data Protection Law No. 6698 (KVKK) and the EU General Data Protection Regulation (GDPR).",
+    "MyShelfie is a personal app for keeping track of the books you read. It only collects the data it needs to work. It doesn't show ads, doesn't sell your data, and doesn't use analytics or advertising tools that track you. This policy explains how your data is handled under the Turkish Personal Data Protection Law No. 6698 (KVKK) and the EU General Data Protection Regulation (GDPR).",
   sections: [
     {
       id: "controller",
       title: "Data controller",
       paragraphs: [
-        "The data controller for your personal data is {controller}, who develops Shelfie as an individual. For any question or request about this policy, write to {email}.",
+        "The data controller for your personal data is {controller}, who develops MyShelfie as an individual. For any question or request about this policy, write to {email}.",
       ],
     },
     {
@@ -193,7 +193,7 @@ const en: PrivacyContent = {
         },
         {
           term: "Book searches",
-          text: "When you add a book, the search text you type is sent to Google Books to fetch results. Shelfie doesn't store these searches.",
+          text: "When you add a book, the search text you type is sent to Google Books to fetch results. MyShelfie doesn't store these searches.",
         },
         {
           term: "Technical logs",
@@ -246,7 +246,7 @@ const en: PrivacyContent = {
     {
       id: "cookies",
       title: "Cookies and browser storage",
-      paragraphs: ["Shelfie only uses what the app needs to work:"],
+      paragraphs: ["MyShelfie only uses what the app needs to work:"],
       items: [
         { term: "Language", text: "A cookie that remembers your language (NEXT_LOCALE)." },
         { term: "Session", text: "Information Firebase keeps in your browser to remember that you're signed in." },
@@ -276,7 +276,7 @@ const en: PrivacyContent = {
       id: "children",
       title: "Children",
       paragraphs: [
-        "Shelfie is not intended for children. If you're under 13, please don't use Shelfie. If we learn that we've collected data from a child, we'll delete it.",
+        "MyShelfie is not intended for children. If you're under 13, please don't use MyShelfie. If we learn that we've collected data from a child, we'll delete it.",
       ],
     },
     {

@@ -31,7 +31,7 @@ export function AuthScreen({ onBack, initialError }: AuthScreenProps) {
               className="text-2xl font-light italic text-white"
               style={{ fontFamily: "var(--font-display)" }}
             >
-              Shelfie
+              MyShelfie
             </p>
             <h1
               id="auth-title"

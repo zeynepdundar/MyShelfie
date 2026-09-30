@@ -10,7 +10,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const content = privacyContent[locale === "tr" ? "tr" : "en"];
-  return { title: `${content.title} · Shelfie` };
+  return { title: `${content.title} · MyShelfie` };
 }
 
 export default function Privacy() {

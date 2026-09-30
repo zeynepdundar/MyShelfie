@@ -40,7 +40,7 @@ interface ExportAccount {
 /** Hesaptaki her şeyi tek bir JSON dosyası olarak indirir (KVKK/GDPR veri taşınabilirliği). */
 export function downloadUserData(account: ExportAccount, books: Book[]) {
   const payload = {
-    app: "Shelfie",
+    app: "MyShelfie",
     exportedAt: new Date().toISOString(),
     account,
     books,
@@ -52,7 +52,7 @@ export function downloadUserData(account: ExportAccount, books: Book[]) {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  link.download = `shelfie-data-${new Date().toISOString().slice(0, 10)}.json`;
+  link.download = `myshelfie-data-${new Date().toISOString().slice(0, 10)}.json`;
   document.body.appendChild(link);
   link.click();
   link.remove();

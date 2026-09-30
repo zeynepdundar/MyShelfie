@@ -117,7 +117,7 @@ export const continueAsGuest = createAsyncThunk(
 /**
  * Google ile devam eder.
  * Misafir oturum açıksa yeni hesap açmak yerine Google'ı bu hesaba bağlar:
- * uid ve kitaplar korunur. Google hesabı zaten başka bir Shelfie hesabına
+ * uid ve kitaplar korunur. Google hesabı zaten başka bir MyShelfie hesabına
  * bağlıysa "auth/credential-already-in-use" döner; arayüz bunu açıklar.
  */
 export const signInWithGoogle = createAsyncThunk(

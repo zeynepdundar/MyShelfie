@@ -51,7 +51,7 @@ function SidebarBody({ onNavigate }: { onNavigate?: () => void }) {
             className="text-2xl font-light italic text-white"
             style={{ fontFamily: "var(--font-display)" }}
           >
-            Shelfie
+            MyShelfie
           </p>
         </div>
 
@@ -122,7 +122,7 @@ export function SidebarMobileBar() {
           className="text-lg font-light italic text-white"
           style={{ fontFamily: "var(--font-display)" }}
         >
-          Shelfie
+          MyShelfie
         </span>
       </Link>
 

@@ -5,7 +5,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 /**
- * Shelfie buton sistemi.
+ * MyShelfie buton sistemi.
  * Tüm butonlar hap (pill) formundadır — navbar ve welcome ekranıyla aynı dil.
  *  • default / glow : sarı, birincil aksiyon (Ekle, Kaydet, Başla)
  *  • primary        : koyu yeşil, ikincil ama dolu aksiyon

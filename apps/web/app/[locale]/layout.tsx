@@ -17,7 +17,7 @@ export async function generateMetadata({
   const t = await getTranslations({ locale, namespace: "meta" });
 
   return {
-    title: "Shelfie",
+    title: "MyShelfie",
     description: t("description"),
     icons: {
       icon: "/logo-books.svg",
@@ -32,9 +32,9 @@ export default async function RootLayout({
   params,
 }: Readonly<{
   children: ReactNode;
-  params: { locale: 'en' | 'tr' };
+  params: Promise<{ locale: string }>;
 }>) {
-  const { locale } = await Promise.resolve(params as any);
+  const { locale } = await params;
   const messages = await getMessages();
 
   return (

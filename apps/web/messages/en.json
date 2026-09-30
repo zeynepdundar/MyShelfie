@@ -140,7 +140,7 @@
           "unknown": "Couldn't delete your account. Please try again."
         }
       },
-      "deletedNotice": "Your account and all your data have been deleted. Thanks for using Shelfie.",
+      "deletedNotice": "Your account and all your data have been deleted. Thanks for using MyShelfie.",
       "dismiss": "Dismiss"
     }
   },
@@ -259,7 +259,7 @@
     }
   },
   "auth": {
-    "title": "Welcome to Shelfie",
+    "title": "Welcome to MyShelfie",
     "subtitle": "Sign in, or create an account in a few seconds.",
     "back": "Back",
     "google": {
@@ -295,7 +295,7 @@
       "missing-password": "Enter your password.",
       "weak-password": "Password must be at least 6 characters.",
       "email-already-in-use": "An account with this email already exists. Use the Sign in tab.",
-      "credential-already-in-use": "This account is already linked to another Shelfie account. Sign out of the guest session and sign in with it; books added as a guest won't move over.",
+      "credential-already-in-use": "This account is already linked to another MyShelfie account. Sign out of the guest session and sign in with it; books added as a guest won't move over.",
       "provider-already-linked": "This sign-in method is already linked to your account.",
       "too-many-requests": "Too many attempts. Try again in a little while.",
       "user-disabled": "This account has been disabled.",

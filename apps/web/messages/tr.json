@@ -140,7 +140,7 @@
           "unknown": "Hesap silinemedi. Lütfen tekrar dene."
         }
       },
-      "deletedNotice": "Hesabın ve bütün verilerin silindi. Shelfie'yi kullandığın için teşekkürler.",
+      "deletedNotice": "Hesabın ve bütün verilerin silindi. MyShelfie'yi kullandığın için teşekkürler.",
       "dismiss": "Kapat"
     }
   },
@@ -259,7 +259,7 @@
     }
   },
   "auth": {
-    "title": "Shelfie'ye hoş geldin",
+    "title": "MyShelfie'ye hoş geldin",
     "subtitle": "Giriş yap ya da birkaç saniyede hesap oluştur.",
     "back": "Geri",
     "google": {
@@ -295,7 +295,7 @@
       "missing-password": "Şifreyi yaz.",
       "weak-password": "Şifre en az 6 karakter olmalı.",
       "email-already-in-use": "Bu e-postayla zaten bir hesap var. Giriş yap sekmesini kullan.",
-      "credential-already-in-use": "Bu hesap zaten başka bir Shelfie hesabına bağlı. Misafir oturumundan çıkıp o hesapla giriş yapabilirsin; misafir olarak eklediklerin taşınmaz.",
+      "credential-already-in-use": "Bu hesap zaten başka bir MyShelfie hesabına bağlı. Misafir oturumundan çıkıp o hesapla giriş yapabilirsin; misafir olarak eklediklerin taşınmaz.",
       "provider-already-linked": "Bu giriş yöntemi hesabına zaten bağlı.",
       "too-many-requests": "Çok fazla deneme yapıldı. Biraz sonra tekrar dene.",
       "user-disabled": "Bu hesap devre dışı bırakılmış.",

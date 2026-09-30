@@ -138,7 +138,7 @@ export function LibraryPage({ user }: LibraryPageProps) {
   const exportReading = () => {
     const suffix = filter === "all" ? "" : `-${filter}`;
     downloadCsv(
-      `shelfie-reading${suffix}-${today()}.csv`,
+      `myshelfie-reading${suffix}-${today()}.csv`,
       booksToCsv(visibleReading)
     );
   };

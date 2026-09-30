@@ -79,7 +79,7 @@ export function PrivacyPage() {
           <span className="flex size-9 items-center justify-center rounded-tile border border-white/20 bg-white/10 backdrop-blur-md">
             <Image src="/logo-books.svg" alt="" width={20} height={20} />
           </span>
-          <span className="font-semibold tracking-tight">Shelfie</span>
+          <span className="font-semibold tracking-tight">MyShelfie</span>
         </Link>
         <Link
           href={`/${locale}`}

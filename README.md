@@ -1,4 +1,4 @@
-# Shelfie
+# MyShelfie
 
 Okuma takip uygulaması. Monorepo olarak pnpm workspaces ile yönetiliyor.
 
