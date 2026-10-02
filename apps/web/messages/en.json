@@ -322,7 +322,8 @@
     "notice": "Learn how your personal data is handled in our <link>Privacy Policy</link>.",
     "backHome": "Home",
     "lastUpdated": "Last updated: {date}",
-    "contents": "Contents"
+    "contents": "Contents",
+    "termsLink": "Terms of Use"
   },
   "errors": {
     "books": {
@@ -345,5 +346,76 @@
   },
   "meta": {
     "description": "Track the books you read, keep your favorite quotes, and see your reading stats."
+  },
+  "landing": {
+    "starting": "Starting…",
+    "cta": "Start your bookshelf",
+    "nav": {
+      "features": "Features",
+      "signIn": "Sign in",
+      "start": "Get started"
+    },
+    "hero": {
+      "eyebrow": "Your reading life, year by year",
+      "titleStart": "Every book becomes part of",
+      "titleEnd": "your story.",
+      "description": "MyShelfie keeps your books, your reading progress and the lines you loved in one calm place — and shows you how your reading grows over time.",
+      "haveAccount": "I have an account",
+      "points": {
+        "free": "Free",
+        "noSignup": "No sign-up needed",
+        "languages": "English & Turkish"
+      }
+    },
+    "benefits": {
+      "label": "What MyShelfie does for you",
+      "organize": {
+        "title": "Organize your books",
+        "body": "Every book on the right shelf — read, reading or want to read — with covers pulled in automatically."
+      },
+      "progress": {
+        "title": "Track your progress",
+        "body": "Note when you start and finish, rate what you've read and always know where you left off."
+      },
+      "habits": {
+        "title": "See your reading habits",
+        "body": "Yearly charts show how many books and pages you read, month by month."
+      }
+    },
+    "features": {
+      "eyebrow": "Features",
+      "title": "Everything your bookshelf needs, nothing it doesn't.",
+      "library": {
+        "title": "All your books, one shelf",
+        "body": "Filter your library by what you're reading, what you've finished and what's next. Ratings and progress are visible at a glance."
+      },
+      "search": {
+        "title": "Add a book in seconds",
+        "body": "Search by title or author and pick the right edition. Cover, author and page count come straight from Google Books."
+      },
+      "stats": {
+        "title": "Watch your year in reading",
+        "body": "See how many books and pages you finished this year and which months you read the most."
+      },
+      "treasures": {
+        "title": "Keep the lines you loved",
+        "body": "Heart your favorite books and save memorable quotes on their own notebook pages, with the book and page they came from."
+      }
+    },
+    "previews": {
+      "library": "MyShelfie library screen",
+      "search": "Adding a book with Google Books search",
+      "stats": "Reading statistics screen",
+      "treasures": "Favorites and quotes screen"
+    },
+    "final": {
+      "title": "Your next book deserves a shelf.",
+      "body": "Start in seconds as a guest and save your shelf to an account whenever you like."
+    },
+    "footer": {
+      "label": "Footer",
+      "contact": "Contact",
+      "language": "Language"
+    }
   }
 }

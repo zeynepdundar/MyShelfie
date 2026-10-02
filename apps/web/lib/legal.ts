@@ -14,3 +14,9 @@ export const PRIVACY_CONTACT_EMAIL = "dundarzey@gmail.com";
 
 /** Metin her değiştiğinde güncelle (YYYY-MM-DD). */
 export const PRIVACY_LAST_UPDATED = "2026-09-29";
+
+/** Genel iletişim adresi (landing sayfası footer'ı). Ayrı bir destek adresi açılınca burası değişecek. */
+export const CONTACT_EMAIL = PRIVACY_CONTACT_EMAIL;
+
+/** Kullanım Koşulları metni her değiştiğinde güncelle (YYYY-MM-DD). */
+export const TERMS_LAST_UPDATED = "2026-10-02";

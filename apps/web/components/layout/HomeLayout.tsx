@@ -10,10 +10,10 @@ import { PageLoading } from "@/components/ui/glass";
 import { Sidebar, SidebarMobileBar } from "./Sidebar";
 
 /** Uygulamadaki gerçek sayfalar. Yeni bir sayfa eklenince buraya da eklenmeli. */
-const KNOWN_ROUTES = ["/", "/stats", "/treasures", "/account", "/privacy"];
+const KNOWN_ROUTES = ["/", "/stats", "/treasures", "/account", "/privacy", "/terms"];
 
 /** Oturum açmadan da görülebilen sayfalar. */
-const PUBLIC_ROUTES = ["/", "/privacy"];
+const PUBLIC_ROUTES = ["/", "/privacy", "/terms"];
 
 interface LayoutProps {
   children: ReactNode;

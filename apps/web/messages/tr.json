@@ -322,7 +322,8 @@
     "notice": "Kişisel verilerinin nasıl işlendiğini <link>Gizlilik Politikası</link>'nda bulabilirsin.",
     "backHome": "Ana sayfa",
     "lastUpdated": "Son güncelleme: {date}",
-    "contents": "İçindekiler"
+    "contents": "İçindekiler",
+    "termsLink": "Kullanım Koşulları"
   },
   "errors": {
     "books": {
@@ -345,5 +346,76 @@
   },
   "meta": {
     "description": "Okuduğun kitapları takip et, alıntılarını sakla, okuma istatistiklerini gör."
+  },
+  "landing": {
+    "starting": "Başlatılıyor…",
+    "cta": "Rafını oluşturmaya başla",
+    "nav": {
+      "features": "Özellikler",
+      "signIn": "Giriş yap",
+      "start": "Başla"
+    },
+    "hero": {
+      "eyebrow": "Yıl yıl okuma serüvenin",
+      "titleStart": "Her kitap,",
+      "titleEnd": "hikâyenin bir parçası.",
+      "description": "MyShelfie kitaplarını, okuma ilerlemeni ve sevdiğin satırları tek ve sakin bir yerde tutar; okumanın zaman içinde nasıl büyüdüğünü gösterir.",
+      "haveAccount": "Hesabım var",
+      "points": {
+        "free": "Ücretsiz",
+        "noSignup": "Kayıt gerekmez",
+        "languages": "Türkçe ve İngilizce"
+      }
+    },
+    "benefits": {
+      "label": "MyShelfie senin için ne yapar",
+      "organize": {
+        "title": "Kitaplarını düzenle",
+        "body": "Her kitap doğru rafta: okundu, okunuyor ya da okumak istiyorum. Kapaklar otomatik gelir."
+      },
+      "progress": {
+        "title": "İlerlemeni takip et",
+        "body": "Başlangıç ve bitiş tarihlerini kaydet, okuduklarını puanla, nerede kaldığını hep bil."
+      },
+      "habits": {
+        "title": "Okuma alışkanlığını gör",
+        "body": "Yıllık grafikler, ay ay kaç kitap ve kaç sayfa okuduğunu gösterir."
+      }
+    },
+    "features": {
+      "eyebrow": "Özellikler",
+      "title": "Kitaplığının ihtiyacı olan her şey, fazlası değil.",
+      "library": {
+        "title": "Bütün kitapların tek rafta",
+        "body": "Kütüphaneni okuduklarına, okumakta olduklarına ve sıradakilere göre filtrele. Puanlar ve ilerleme tek bakışta görünür."
+      },
+      "search": {
+        "title": "Saniyeler içinde kitap ekle",
+        "body": "Kitap adı ya da yazarla ara, doğru baskıyı seç. Kapak, yazar ve sayfa sayısı doğrudan Google Books'tan gelir."
+      },
+      "stats": {
+        "title": "Okuma yılını izle",
+        "body": "Bu yıl kaç kitap ve kaç sayfa bitirdiğini, en çok hangi aylarda okuduğunu gör."
+      },
+      "treasures": {
+        "title": "Sevdiğin satırları sakla",
+        "body": "Favori kitaplarını kalple işaretle, unutulmaz alıntıları kitabı ve sayfasıyla birlikte kendi defter yapraklarında biriktir."
+      }
+    },
+    "previews": {
+      "library": "MyShelfie kütüphane ekranı",
+      "search": "Google Books aramasıyla kitap ekleme",
+      "stats": "Okuma istatistikleri ekranı",
+      "treasures": "Favoriler ve alıntılar ekranı"
+    },
+    "final": {
+      "title": "Sıradaki kitabın bir rafı hak ediyor.",
+      "body": "Misafir olarak saniyeler içinde başla, rafını istediğin zaman bir hesaba kaydet."
+    },
+    "footer": {
+      "label": "Alt bilgi",
+      "contact": "İletişim",
+      "language": "Dil"
+    }
   }
 }

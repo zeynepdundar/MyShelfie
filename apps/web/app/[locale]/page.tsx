@@ -1,19 +1,19 @@
 'use client';
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
 import { RootState } from "@/lib/store";
 import { useAppDispatch } from "@/lib/hooks";
 import { continueAsGuest } from "@/lib/authSlice";
 import { AuthScreen } from "@/components/auth/login";
-import { WelcomeScreen } from "@/components/pages/welcome-page";
+import { LandingPage } from "@/components/landing/landing-page";
 import { LibraryPage } from "@/components/pages/library-page";
 import { AccountDeletedNotice } from "@/components/account/delete-account";
 
 /**
- * Kök sayfa: oturum varsa Kütüphane, yoksa karşılama ekranı.
- * "Get Started" kayıt formu göstermeden misafir hesabı açar; hesabı olan
+ * Kök sayfa: oturum varsa Kütüphane, yoksa landing sayfası.
+ * "Başla" kayıt formu göstermeden misafir hesabı açar; hesabı olan
  * kullanıcı giriş ekranına geçer.
  */
 export default function Home() {
@@ -26,6 +26,11 @@ export default function Home() {
   const isAuthenticated = useSelector(
     (state: RootState) => state.auth.status === "authenticated"
   );
+
+  // Landing sayfasının altındaki butondan gelinse de giriş ekranı en üstten açılsın
+  useEffect(() => {
+    if (showAuth) window.scrollTo({ top: 0 });
+  }, [showAuth]);
 
   async function startAsGuest() {
     setStartingGuest(true);
@@ -59,7 +64,7 @@ export default function Home() {
   return (
     <>
       <AccountDeletedNotice />
-      <WelcomeScreen
+      <LandingPage
         onGetStarted={() => void startAsGuest()}
         onSignIn={() => setShowAuth(true)}
         starting={startingGuest}
