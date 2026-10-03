@@ -67,6 +67,13 @@ export function LandingPage({ onGetStarted, onSignIn, starting = false }: Landin
 
   return (
     <div className="relative isolate min-h-dvh w-full overflow-x-clip text-white">
+      {/* Okunabilirlik katmanı: navbar dahil sayfanın tamamını kaplar, böylece
+          menünün arkasıyla ilk ekran arasında ton farkı oluşmaz. Alttaki bölümler
+          zaten koyu cam zeminde durur. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(4,26,33,0.55)_0%,rgba(4,26,33,0.3)_55%,rgba(4,26,33,0.1)_100%)]"
+      />
       <LandingNav onGetStarted={onGetStarted} onSignIn={onSignIn} starting={starting} />
 
       {/* --- İlk ekran ------------------------------------------------------ */}
@@ -74,10 +81,6 @@ export function LandingPage({ onGetStarted, onSignIn, starting = false }: Landin
         aria-labelledby="landing-heading"
         className="relative mx-auto grid w-full max-w-7xl items-center gap-12 px-6 pb-20 pt-10 sm:px-10 lg:grid-cols-[1fr_1.05fr] lg:gap-16 lg:px-16 lg:pb-28 lg:pt-16"
       >
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-y-0 left-1/2 -z-10 w-screen -translate-x-1/2 bg-[linear-gradient(90deg,rgba(4,26,33,0.55)_0%,rgba(4,26,33,0.3)_55%,rgba(4,26,33,0.1)_100%)]"
-        />
         <div className="max-w-xl">
           <p className="mb-6 text-xs font-semibold uppercase tracking-[0.2em] text-accent-strong">
             {t("hero.eyebrow")}
