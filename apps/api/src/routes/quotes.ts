@@ -6,6 +6,7 @@ import { parseBody, requireJson } from "../middleware/validate.js";
 import { notFound } from "../http-error.js";
 import { getPrisma } from "../prisma.js";
 import { createQuoteSchema, updateQuoteSchema } from "../schemas/quote.js";
+import { toQuoteDto } from "../serializers.js";
 
 /** mergeParams: üst router'daki :bookId buraya taşınsın diye. */
 export const quotesRouter = Router({ mergeParams: true });
@@ -30,7 +31,7 @@ quotesRouter.get("/", async (req, res) => {
     orderBy: { createdAt: "desc" },
   });
 
-  res.json(quotes);
+  res.json(quotes.map(toQuoteDto));
 });
 
 quotesRouter.post("/", requireJson, async (req, res) => {
@@ -40,27 +41,27 @@ quotesRouter.post("/", requireJson, async (req, res) => {
 
   const quote = await getPrisma().quote.create({ data: { ...data, bookId } });
 
-  res.status(201).json(quote);
+  res.status(201).json(toQuoteDto(quote));
 });
 
 quotesRouter.patch("/:quoteId", requireJson, async (req, res) => {
   const user = currentUser(req);
   const bookId = await assertBookOwnership(user.uid, param(req, "bookId"));
+  const quoteId = param(req, "quoteId");
   const data = parseBody(updateQuoteSchema, req);
   const prisma = getPrisma();
 
+  // Alıntının bu kitaba ait olduğu aynı sorguda kontrol ediliyor.
   const { count } = await prisma.quote.updateMany({
-    where: { id: param(req, "quoteId"), bookId },
+    where: { id: quoteId, bookId },
     data,
   });
 
   if (count === 0) throw notFound("Alıntı bulunamadı");
 
-  const quote = await prisma.quote.findUnique({
-    where: { id: param(req, "quoteId") },
-  });
+  const quote = await prisma.quote.findUniqueOrThrow({ where: { id: quoteId } });
 
-  res.json(quote);
+  res.json(toQuoteDto(quote));
 });
 
 quotesRouter.delete("/:quoteId", async (req, res) => {

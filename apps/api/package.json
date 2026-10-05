@@ -12,13 +12,19 @@
     "postinstall": "prisma generate",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
-    "db:push": "prisma db push",
-    "db:studio": "prisma studio"
+    "db:deploy": "prisma migrate deploy",
+    "db:deploy:neon": "node --env-file=../../.env.local ../../node_modules/prisma/build/index.js migrate deploy",
+    "db:studio:neon": "node --env-file=../../.env.local ../../node_modules/prisma/build/index.js studio",
+    "db:reset": "prisma migrate reset",
+    "db:studio": "prisma studio",
+    "migrate:firestore": "tsx src/scripts/migrate-firestore.ts"
   },
   "dependencies": {
-    "@prisma/client": "^6.1.0",
+    "@prisma/adapter-pg": "^7.10.0",
+    "@prisma/client": "^7.10.0",
     "@shelfie/types": "workspace:*",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
     "express": "^5.0.1",
     "firebase-admin": "^13.0.1",
     "zod": "^3.24.1"
@@ -27,7 +33,7 @@
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/node": "^20",
-    "prisma": "^6.1.0",
+    "prisma": "^7.10.0",
     "tsx": "^4.19.2",
     "typescript": "^5"
   }

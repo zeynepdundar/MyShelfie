@@ -1,3 +1,6 @@
+// apps/api/.env varsa yüklenir; üretimde değişkenler ortamdan gelir.
+import "dotenv/config";
+
 /**
  * Ortam değişkenleri tek yerden okunur. Hiçbiri zorunlu değil — API veritabanı
  * ve Firebase kimlik bilgileri olmadan da ayağa kalkar, eksik olan yalnızca o

@@ -2,58 +2,46 @@ import { Router } from "express";
 
 import { currentUser } from "../middleware/auth.js";
 import { param } from "../middleware/params.js";
-import { parseBody, requireJson } from "../middleware/validate.js";
+import { parseBody, parseQuery, requireJson } from "../middleware/validate.js";
 import { notFound } from "../http-error.js";
 import { getPrisma } from "../prisma.js";
 import {
   bookQuerySchema,
   createBookSchema,
+  importBooksSchema,
   updateBookSchema,
 } from "../schemas/book.js";
+import { toBookDto } from "../serializers.js";
+import {
+  normalizeStatus,
+  parseTimestamp,
+  statusWhere,
+} from "../services/books.js";
 import { ensureUser } from "../services/users.js";
 import { quotesRouter } from "./quotes.js";
 
 export const booksRouter = Router();
 
-/** Listelemede kullanılan filtre. userId her zaman var — sahiplik buradan gelir. */
-type BookFilter = {
-  userId: string;
-  isCompleted?: boolean;
-  wantToRead?: boolean;
-  isFavorite?: boolean;
-};
-
 /** Kitap yalnızca sahibine görünür; her sorgu userId ile daraltılır. */
-function ownedBook(userId: string, bookId: string) {
-  return { id: bookId, userId };
-}
+const ownedBook = (userId: string, bookId: string) => ({ id: bookId, userId });
 
 const withQuotes = { quotes: { orderBy: { createdAt: "desc" } } } as const;
 
 booksRouter.get("/", async (req, res) => {
   const user = currentUser(req);
-  const query = bookQuerySchema.parse(req.query);
-
-  const where: BookFilter = { userId: user.uid };
-
-  if (query.status === "completed") where.isCompleted = true;
-  if (query.status === "wantToRead") {
-    where.isCompleted = false;
-    where.wantToRead = true;
-  }
-  if (query.status === "inProgress") {
-    where.isCompleted = false;
-    where.wantToRead = false;
-  }
-  if (query.favorite) where.isFavorite = query.favorite === "true";
+  const query = parseQuery(bookQuerySchema, req);
 
   const books = await getPrisma().book.findMany({
-    where,
+    where: {
+      userId: user.uid,
+      ...statusWhere(query.status),
+      ...(query.favorite ? { isFavorite: query.favorite === "true" } : {}),
+    },
     orderBy: { createdAt: "desc" },
     include: withQuotes,
   });
 
-  res.json(books);
+  res.json(books.map(toBookDto));
 });
 
 booksRouter.post("/", requireJson, async (req, res) => {
@@ -63,11 +51,41 @@ booksRouter.post("/", requireJson, async (req, res) => {
   await ensureUser(user);
 
   const book = await getPrisma().book.create({
-    data: { ...data, userId: user.uid },
-    include: { quotes: true },
+    data: { ...data, ...normalizeStatus(data), userId: user.uid },
+    include: withQuotes,
   });
 
-  res.status(201).json(book);
+  res.status(201).json(toBookDto(book));
+});
+
+/**
+ * Toplu içe aktarma: CSV import ve Firestore'dan taşıma için.
+ * Hepsi tek işlemde yazılır — biri hatalıysa hiçbiri eklenmez.
+ */
+booksRouter.post("/import", requireJson, async (req, res) => {
+  const user = currentUser(req);
+  const { books } = parseBody(importBooksSchema, req);
+  const prisma = getPrisma();
+
+  await ensureUser(user);
+
+  const created = await prisma.$transaction(
+    books.map(({ quotes, dateAdded, ...data }) => {
+      const createdAt = parseTimestamp(dateAdded);
+      return prisma.book.create({
+        data: {
+          ...data,
+          ...normalizeStatus(data),
+          ...(createdAt ? { createdAt } : {}),
+          userId: user.uid,
+          quotes: { create: quotes },
+        },
+        select: { id: true },
+      });
+    }),
+  );
+
+  res.status(201).json({ imported: created.length });
 });
 
 booksRouter.get("/:bookId", async (req, res) => {
@@ -80,7 +98,7 @@ booksRouter.get("/:bookId", async (req, res) => {
 
   if (!book) throw notFound("Kitap bulunamadı");
 
-  res.json(book);
+  res.json(toBookDto(book));
 });
 
 booksRouter.patch("/:bookId", requireJson, async (req, res) => {
@@ -89,21 +107,25 @@ booksRouter.patch("/:bookId", requireJson, async (req, res) => {
   const data = parseBody(updateBookSchema, req);
   const prisma = getPrisma();
 
-  // updateMany kullanılıyor çünkü update yalnızca benzersiz alanla çalışır ve
-  // sahiplik kontrolünü aynı sorguda yapmak istiyoruz.
-  const { count } = await prisma.book.updateMany({
+  const existing = await prisma.book.findFirst({
     where: ownedBook(user.uid, bookId),
-    data,
+    select: { isCompleted: true, wantToRead: true, endDate: true, dateRead: true },
   });
 
-  if (count === 0) throw notFound("Kitap bulunamadı");
+  if (!existing) throw notFound("Kitap bulunamadı");
 
-  const book = await prisma.book.findUnique({
+  // Durum alanlarına dokunulmuyorsa (ör. yalnızca favori) normalize etmeye gerek yok.
+  const touchesStatus = ["isCompleted", "wantToRead", "endDate", "dateRead"].some(
+    (key) => key in data,
+  );
+
+  const book = await prisma.book.update({
     where: { id: bookId },
+    data: touchesStatus ? { ...data, ...normalizeStatus(data, existing) } : data,
     include: withQuotes,
   });
 
-  res.json(book);
+  res.json(toBookDto(book));
 });
 
 booksRouter.delete("/:bookId", async (req, res) => {

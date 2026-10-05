@@ -1,21 +1,29 @@
-// Shelfie veri modeli.
-// Kullanıcı kimliği Firebase'den gelir; User.id doğrudan Firebase uid'sidir,
-// bu yüzden ayrı bir parola/oturum tablosu yok.
+// MyShelfie veri modeli.
+//
+// Kimlik Firebase Auth'ta; User.id doğrudan Firebase uid'sidir, bu yüzden
+// parola/oturum tablosu yok. Kullanıcı satırı ilk istekte açılır
+// (src/services/users.ts › ensureUser).
+//
+// Bağlantı adresi şemada değil prisma.config.ts içinde (Prisma 7).
 
 generator client {
-  provider = "prisma-client-js"
+  provider            = "prisma-client"
+  output              = "../src/generated/prisma"
+  moduleFormat        = "esm"
+  importFileExtension = "js"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model User {
   id          String   @id
-  email       String?  @unique
+  email       String?
   displayName String?
   photoUrl    String?
+  /// Misafir (anonymous) Firebase hesabı mı? Kalıcı yöntem bağlanınca false olur.
+  isAnonymous Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -25,11 +33,11 @@ model User {
 }
 
 model Book {
-  id            String    @id @default(cuid())
+  id            String  @id @default(cuid())
   userId        String
   title         String
   author        String
-  pages         Int       @default(0)
+  pages         Int     @default(0)
   isbn          String?
   publishedYear Int?
   genre         String?
@@ -37,14 +45,16 @@ model Book {
   notes         String?
   coverUrl      String?
 
-  // Kitabın durumu: bitmişse completed, değilse wantToRead ise okuma
-  // listesinde, ikisi de değilse devam ediyor sayılır.
+  // Durum kuralı (web › lib/bookStatus.ts ile aynı): bitiş tarihi olan kitap
+  // okunmuştur. API yazarken bu bayrakları tutarlı hâle getirir
+  // (src/services/books.ts › normalizeStatus), filtreler de buna göre çalışır.
   isCompleted Boolean @default(false)
   isFavorite  Boolean @default(false)
   wantToRead  Boolean @default(false)
 
   startDate DateTime? @db.Date
   endDate   DateTime? @db.Date
+  /// Eski kayıtlardan kalan alan; yeni yazmalarda endDate ile aynı tutulur.
   dateRead  DateTime? @db.Date
 
   createdAt DateTime @default(now())
@@ -53,9 +63,7 @@ model Book {
   user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   quotes Quote[]
 
-  @@index([userId])
-  @@index([userId, isCompleted])
-  @@index([userId, isFavorite])
+  @@index([userId, createdAt])
   @@map("books")
 }
 
@@ -70,6 +78,6 @@ model Quote {
 
   book Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
 
-  @@index([bookId])
+  @@index([bookId, createdAt])
   @@map("quotes")
 }

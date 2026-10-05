@@ -1,6 +1,7 @@
 import { collection, getDocs, writeBatch } from "firebase/firestore";
 import type { Book } from "@shelfie/types";
 
+import { apiFetch, isApiEnabled } from "@/lib/api";
 import { db } from "@/lib/firebase";
 
 /* ============================================================================
@@ -16,8 +17,19 @@ const USER_COLLECTIONS = ["books"] as const;
 /** Firestore bir batch'te en fazla 500 işlem kabul ediyor; pay bırakıyoruz. */
 const BATCH_LIMIT = 450;
 
-/** Kullanıcının Firestore'daki bütün verisini siler. Kurallar gereği oturum açıkken çalışmalı. */
+/**
+ * Kullanıcının bütün verisini siler. Oturum açıkken çalışmalı: API token
+ * ister, Firestore kuralları da yalnızca sahibine izin veriyor.
+ *
+ * API açıksa önce Postgres'teki veri silinir. Firestore her durumda
+ * temizlenir: API'ye geçişte taşınan eski kopyalar orada kalmasın.
+ */
 export async function deleteUserData(uid: string) {
+  if (isApiEnabled) await apiFetch<void>("/api/me", { method: "DELETE" });
+  await deleteFirestoreData(uid);
+}
+
+async function deleteFirestoreData(uid: string) {
   for (const name of USER_COLLECTIONS) {
     const snapshot = await getDocs(collection(db, "users", uid, name));
 

@@ -1,12 +1,14 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { auth } from "@/lib/firebase";
-import { doc, setDoc, getDoc, updateDoc, deleteDoc, collection, query, where, getDocs } from "firebase/firestore";
-import { db } from "@/lib/firebase";
 import type { Book, Quote } from "@shelfie/types";
 
-/* Tek kaynak: types/book.ts. Burada tekrar tanımlanmıyor, sadece yeniden ihraç
+import { booksRepo, type NewBook, type NewQuote } from "@/lib/booksRepo";
+
+/* Tek kaynak: @shelfie/types. Burada tekrar tanımlanmıyor, sadece yeniden ihraç
    ediliyor ki eski importlar çalışmaya devam etsin. */
 export type { Book, Quote };
+
+/* Verinin nereden geldiği (API ya da Firestore) lib/booksRepo.ts'de seçilir;
+   bu dosya ikisini de aynı şekilde kullanır. */
 
 interface BooksState {
   books: Book[];
@@ -23,100 +25,59 @@ const initialState: BooksState = {
 /* state.error bir hata KODU tutar (ör. "fetchFailed"); metne çeviri arayüzde
    messages/*.json › errors.books altından yapılır. */
 
-// Kitap ekleme
+/** Thunk gövdesini sarar: hatayı loglar ve verilen kodla reddeder. */
+function withErrorCode<Arg, Result>(
+  code: string,
+  run: (arg: Arg) => Promise<Result>
+) {
+  return async (arg: Arg, { rejectWithValue }: { rejectWithValue: (v: string) => unknown }) => {
+    try {
+      return await run(arg);
+    } catch (err) {
+      console.error("[books]", err);
+      return rejectWithValue(code) as never;
+    }
+  };
+}
+
 export const addBook = createAsyncThunk(
   "books/addBook",
-  async (bookData: Omit<Book, "id" | "dateAdded">, { rejectWithValue }) => {
-    try {
-      const user = auth.currentUser;
-      if (!user) {
-        throw new Error("Not signed in");
-      }
-
-      const bookId = Date.now().toString();
-      const newBook: Book = {
-        ...bookData,
-        id: bookId,
-        dateAdded: new Date().toISOString(),
-      };
-
-      const userBookRef = doc(db, "users", user.uid, "books", bookId);
-      await setDoc(userBookRef, newBook);
-
-      return newBook;
-    } catch (err: any) {
-      console.error("[books]", err);
-      return rejectWithValue("addFailed");
-    }
-  }
+  withErrorCode("addFailed", (bookData: NewBook) => booksRepo.add(bookData))
 );
 
-// Kullanıcının kitaplarını getirme
 export const fetchUserBooks = createAsyncThunk(
   "books/fetchUserBooks",
-  async (_, { rejectWithValue }) => {
-    try {
-      const user = auth.currentUser;
-      if (!user) {
-        throw new Error("Not signed in");
-      }
-
-      const booksRef = collection(db, "users", user.uid, "books");
-      const querySnapshot = await getDocs(booksRef);
-      
-      const books: Book[] = [];
-      querySnapshot.forEach((doc) => {
-        books.push(doc.data() as Book);
-      });
-
-      return books;
-    } catch (err: any) {
-      console.error("[books]", err);
-      return rejectWithValue("fetchFailed");
-    }
-  }
+  withErrorCode("fetchFailed", (_: void) => booksRepo.list())
 );
 
-// Kitap güncelleme
 export const updateBook = createAsyncThunk(
   "books/updateBook",
-  async ({ bookId, updates }: { bookId: string; updates: Partial<Book> }, { rejectWithValue }) => {
-    try {
-      const user = auth.currentUser;
-      if (!user) {
-        throw new Error("Not signed in");
-      }
-
-      const bookRef = doc(db, "users", user.uid, "books", bookId);
-      await updateDoc(bookRef, updates);
-
-      return { bookId, updates };
-    } catch (err: any) {
-      console.error("[books]", err);
-      return rejectWithValue("updateFailed");
-    }
-  }
+  withErrorCode(
+    "updateFailed",
+    async ({ bookId, updates }: { bookId: string; updates: Partial<Book> }) => ({
+      bookId,
+      updates: await booksRepo.update(bookId, updates),
+    })
+  )
 );
 
-// Kitap silme
 export const deleteBook = createAsyncThunk(
   "books/deleteBook",
-  async (bookId: string, { rejectWithValue }) => {
-    try {
-      const user = auth.currentUser;
-      if (!user) {
-        throw new Error("Not signed in");
-      }
+  withErrorCode("deleteFailed", async (bookId: string) => {
+    await booksRepo.remove(bookId);
+    return bookId;
+  })
+);
 
-      const bookRef = doc(db, "users", user.uid, "books", bookId);
-      await deleteDoc(bookRef);
-
-      return bookId;
-    } catch (err: any) {
-      console.error("[books]", err);
-      return rejectWithValue("deleteFailed");
-    }
-  }
+export const addQuote = createAsyncThunk(
+  "books/addQuote",
+  withErrorCode(
+    "updateFailed",
+    async ({ bookId, quote }: { bookId: string; quote: NewQuote }) => ({
+      bookId,
+      quote: await booksRepo.addQuote(bookId, quote),
+    })
+  )
 );
 
 const booksSlice = createSlice({
@@ -133,63 +94,58 @@ const booksSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
+    const pending = (state: BooksState) => {
+      state.status = "loading";
+      state.error = null;
+    };
+    const rejected =
+      (fallback: string) =>
+      (state: BooksState, action: { payload?: unknown }) => {
+        state.status = "failed";
+        state.error = (action.payload as string) || fallback;
+      };
+
     builder
-      // Add Book
-      .addCase(addBook.pending, (state) => {
-        state.status = "loading";
-        state.error = null;
-      })
+      .addCase(addBook.pending, pending)
       .addCase(addBook.fulfilled, (state, action) => {
         state.books.push(action.payload);
         state.status = "succeeded";
       })
-      .addCase(addBook.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = (action.payload as string) || "addFailed";
-      })
-      // Fetch Books
-      .addCase(fetchUserBooks.pending, (state) => {
-        state.status = "loading";
-        state.error = null;
-      })
+      .addCase(addBook.rejected, rejected("addFailed"))
+
+      .addCase(fetchUserBooks.pending, pending)
       .addCase(fetchUserBooks.fulfilled, (state, action) => {
         state.books = action.payload;
         state.status = "succeeded";
       })
-      .addCase(fetchUserBooks.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = (action.payload as string) || "fetchFailed";
-      })
-      // Update Book
-      .addCase(updateBook.pending, (state) => {
-        state.status = "loading";
-        state.error = null;
-      })
+      .addCase(fetchUserBooks.rejected, rejected("fetchFailed"))
+
+      .addCase(updateBook.pending, pending)
       .addCase(updateBook.fulfilled, (state, action) => {
         const { bookId, updates } = action.payload;
-        const bookIndex = state.books.findIndex(book => book.id === bookId);
-        if (bookIndex !== -1) {
-          state.books[bookIndex] = { ...state.books[bookIndex], ...updates };
+        const index = state.books.findIndex((book) => book.id === bookId);
+        if (index !== -1) {
+          state.books[index] = { ...state.books[index], ...updates };
         }
         state.status = "succeeded";
       })
-      .addCase(updateBook.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = (action.payload as string) || "updateFailed";
-      })
-      // Delete Book
-      .addCase(deleteBook.pending, (state) => {
-        state.status = "loading";
-        state.error = null;
-      })
+      .addCase(updateBook.rejected, rejected("updateFailed"))
+
+      .addCase(deleteBook.pending, pending)
       .addCase(deleteBook.fulfilled, (state, action) => {
-        state.books = state.books.filter(book => book.id !== action.payload);
+        state.books = state.books.filter((book) => book.id !== action.payload);
         state.status = "succeeded";
       })
-      .addCase(deleteBook.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = (action.payload as string) || "deleteFailed";
-      });
+      .addCase(deleteBook.rejected, rejected("deleteFailed"))
+
+      .addCase(addQuote.pending, pending)
+      .addCase(addQuote.fulfilled, (state, action) => {
+        const { bookId, quote } = action.payload;
+        const book = state.books.find((b) => b.id === bookId);
+        if (book) book.quotes = [...(book.quotes ?? []), quote];
+        state.status = "succeeded";
+      })
+      .addCase(addQuote.rejected, rejected("updateFailed"));
   },
 });
 

@@ -33,6 +33,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # vercel
 .vercel
@@ -44,3 +45,6 @@ _to_delete/
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# prisma (pnpm install / prisma generate ile üretilir)
+apps/api/src/generated/

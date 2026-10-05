@@ -23,6 +23,7 @@ export async function requireAuth(
         email: null,
         displayName: null,
         photoUrl: null,
+        isAnonymous: false,
       };
       return next();
     }

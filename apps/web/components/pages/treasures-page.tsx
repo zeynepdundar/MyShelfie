@@ -16,7 +16,7 @@ import {
 
 import { AppDispatch, RootState } from '@/lib/store';
 import { formatDate } from "@/lib/format";
-import { fetchUserBooks, updateBook } from '@/lib/booksSlice';
+import { addQuote as addQuoteToBook, fetchUserBooks, updateBook } from '@/lib/booksSlice';
 import { AuthUser } from '@/lib/authSlice';
 import type { Quote } from '@shelfie/types';
 import { Button } from '@/components/ui/button';
@@ -179,27 +179,23 @@ export function TreasuresPage({ user }: TreasuresPageProps) {
 
     const parsedPage = Number.parseInt(quotePage, 10);
     const trimmedNotes = quoteNotes.trim();
-    // Firestore `undefined` alanları reddediyor; boş opsiyonel alanlar hiç eklenmemeli.
-    const newQuote: Quote = {
-      id: Date.now().toString(),
-      text: quoteText.trim(),
-      dateAdded: new Date().toISOString(),
-      ...(Number.isNaN(parsedPage) ? {} : { page: parsedPage }),
-      ...(trimmedNotes ? { notes: trimmedNotes } : {}),
-    };
 
     setIsSaving(true);
     setSaveError(null);
     try {
       // unwrap(): thunk reddedilirse hata fırlatır, catch'e düşer.
-      await dispatch(
-        updateBook({
+      const { quote } = await dispatch(
+        addQuoteToBook({
           bookId: selectedBook.id,
-          updates: { quotes: [...(selectedBook.quotes || []), newQuote] },
+          quote: {
+            text: quoteText.trim(),
+            page: Number.isNaN(parsedPage) ? undefined : parsedPage,
+            notes: trimmedNotes || undefined,
+          },
         }),
       ).unwrap();
       closeQuoteForm();
-      setJustAddedId(newQuote.id);
+      setJustAddedId(quote.id);
       window.setTimeout(() => {
         quotesRef.current?.scrollIntoView({
           behavior: 'smooth',
