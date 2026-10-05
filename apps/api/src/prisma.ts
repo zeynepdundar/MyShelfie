@@ -38,14 +38,39 @@ export function getPrisma(): PrismaClient {
   return client;
 }
 
-/** /health için: veritabanına gerçekten ulaşılabiliyor mu? */
-export async function pingDatabase(): Promise<boolean> {
-  if (!hasDatabase) return false;
+/** Bağlantı adresindeki sunucu adı (parola/kullanıcı olmadan) — teşhis için. */
+export function databaseHost(): string | null {
+  try {
+    return new URL(env.databaseUrl).hostname || null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * /health için: veritabanına gerçekten ulaşılabiliyor mu? Ulaşılamıyorsa
+ * sebebi kısa bir kodla döner (ENOTFOUND, ECONNREFUSED, 28P01 = yanlış
+ * parola…); tam hata sunucu loglarına yazılır. Adres/parola dönmez.
+ */
+export async function pingDatabase(): Promise<
+  { ok: true } | { ok: false; reason: string }
+> {
+  if (!hasDatabase) return { ok: false, reason: "DATABASE_URL tanımlı değil" };
   try {
     await getPrisma().$queryRaw`SELECT 1`;
-    return true;
-  } catch {
-    return false;
+    return { ok: true };
+  } catch (error) {
+    console.error("[health] veritabanı bağlantısı başarısız:", error);
+    const e = error as { code?: unknown; cause?: { code?: unknown }; message?: unknown };
+    const code = e?.cause?.code ?? e?.code;
+    const message = String(e?.message ?? error)
+      .replace(/postgres(ql)?:\/\/[^\s"']+/gi, "<url>")
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .pop()
+      ?.slice(0, 200);
+    return { ok: false, reason: [code, message].filter(Boolean).join(": ") };
   }
 }
 

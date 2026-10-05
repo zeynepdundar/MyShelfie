@@ -1,21 +1,35 @@
 import { Router } from "express";
 
 import { hasDatabase, hasFirebaseCredentials, env } from "../env.js";
-import { pingDatabase } from "../prisma.js";
+import { databaseHost, pingDatabase } from "../prisma.js";
 
 export const healthRouter = Router();
 
+/** Boş olan Firebase değişkenlerinin adları (değerleri değil). */
+function missingFirebaseVars() {
+  return Object.entries({
+    FIREBASE_PROJECT_ID: env.firebase.projectId,
+    FIREBASE_CLIENT_EMAIL: env.firebase.clientEmail,
+    FIREBASE_PRIVATE_KEY: env.firebase.privateKey,
+  })
+    .filter(([, value]) => !value)
+    .map(([name]) => name);
+}
+
 /**
- * Kimlik doğrulaması istemez; hangi bağımlılığın hazır olduğunu da söyler.
- * Veritabanı yapılandırılmış ama ulaşılamıyorsa 503 döner ki barındırma
- * ortamının sağlık kontrolü bunu fark etsin.
+ * Kimlik doğrulaması istemez; hangi bağımlılığın hazır olduğunu ve değilse
+ * nedenini söyler (gizli değer döndürmeden). Veritabanı yapılandırılmış ama
+ * ulaşılamıyorsa 503 döner ki barındırma ortamının sağlık kontrolü fark etsin.
  */
 healthRouter.get("/health", async (_req, res) => {
-  const database = !hasDatabase
-    ? "missing"
-    : (await pingDatabase())
-      ? "ok"
-      : "unreachable";
+  const ping = hasDatabase ? await pingDatabase() : null;
+  const database = !hasDatabase ? "missing" : ping?.ok ? "ok" : "unreachable";
+
+  const firebase = hasFirebaseCredentials
+    ? "configured"
+    : env.devUserId
+      ? "bypassed (DEV_USER_ID)"
+      : "missing";
 
   res.status(database === "unreachable" ? 503 : 200).json({
     status: database === "unreachable" ? "degraded" : "ok",
@@ -24,11 +38,18 @@ healthRouter.get("/health", async (_req, res) => {
     environment: env.nodeEnv,
     dependencies: {
       database,
-      firebase: hasFirebaseCredentials
-        ? "configured"
-        : env.devUserId
-          ? "bypassed (DEV_USER_ID)"
-          : "missing",
+      firebase,
     },
+    ...(database !== "ok" || firebase === "missing"
+      ? {
+          diagnostics: {
+            ...(hasDatabase ? { databaseHost: databaseHost() } : {}),
+            ...(ping && !ping.ok ? { databaseError: ping.reason } : {}),
+            ...(firebase === "missing"
+              ? { missingFirebaseVars: missingFirebaseVars() }
+              : {}),
+          },
+        }
+      : {}),
   });
 });
