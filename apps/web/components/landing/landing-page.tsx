@@ -74,7 +74,7 @@ export function LandingPage({ onGetStarted, onSignIn, starting = false }: Landin
         aria-hidden
         className="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(4,26,33,0.55)_0%,rgba(4,26,33,0.3)_55%,rgba(4,26,33,0.1)_100%)]"
       />
-      <LandingNav onGetStarted={onGetStarted} onSignIn={onSignIn} starting={starting} />
+      <LandingNav onSignIn={onSignIn} />
 
       {/* --- İlk ekran ------------------------------------------------------ */}
       <section
@@ -96,17 +96,18 @@ export function LandingPage({ onGetStarted, onSignIn, starting = false }: Landin
             {t("hero.description")}
           </p>
 
-          <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
+          <div className="mt-9">
             {startButton("lg", "w-full sm:w-auto")}
-            <Button
-              type="button"
-              variant="outline"
-              size="lg"
-              onClick={onSignIn}
-              className="w-full sm:w-auto"
-            >
-              {t("hero.haveAccount")}
-            </Button>
+            <p className="mt-4 text-sm text-white/65">
+              {t("hero.haveAccount")}{" "}
+              <button
+                type="button"
+                onClick={onSignIn}
+                className="font-medium text-white underline decoration-white/40 underline-offset-4 transition-colors hover:decoration-white"
+              >
+                {t("hero.signIn")}
+              </button>
+            </p>
           </div>
           <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-sm text-white/65">
             {(["free", "noSignup", "languages"] as const).map((key) => (
@@ -250,7 +251,7 @@ export function LandingPage({ onGetStarted, onSignIn, starting = false }: Landin
 
 /* --- Üst menü ------------------------------------------------------------- */
 
-function LandingNav({ onGetStarted, onSignIn, starting }: LandingPageProps) {
+function LandingNav({ onSignIn }: Pick<LandingPageProps, "onSignIn">) {
   const t = useTranslations("landing");
   const [scrolled, setScrolled] = useState(false);
 
@@ -284,15 +285,8 @@ function LandingNav({ onGetStarted, onSignIn, starting }: LandingPageProps) {
           >
             {t("nav.features")}
           </a>
-          <button
-            type="button"
-            onClick={onSignIn}
-            className="whitespace-nowrap rounded-full px-2.5 py-2 text-sm font-medium text-white/80 transition-colors hover:text-white sm:px-4"
-          >
+          <Button type="button" onClick={onSignIn} className="ml-1 h-10 px-4 sm:h-11 sm:px-5">
             {t("nav.signIn")}
-          </button>
-          <Button type="button" onClick={onGetStarted} disabled={starting} className="ml-1 h-10 px-4 sm:h-11 sm:px-5">
-            {starting ? t("starting") : t("nav.start")}
           </Button>
         </div>
       </nav>

@@ -352,15 +352,15 @@
     "cta": "Start your bookshelf",
     "nav": {
       "features": "Features",
-      "signIn": "Sign in",
-      "start": "Get started"
+      "signIn": "Sign in"
     },
     "hero": {
       "eyebrow": "Your reading life, year by year",
       "titleStart": "Every book becomes part of",
       "titleEnd": "your story.",
       "description": "MyShelfie keeps your books, your reading progress and the lines you loved in one calm place — and shows you how your reading grows over time.",
-      "haveAccount": "I have an account",
+      "haveAccount": "Already have an account?",
+      "signIn": "Sign in",
       "points": {
         "free": "Free",
         "noSignup": "No sign-up needed",

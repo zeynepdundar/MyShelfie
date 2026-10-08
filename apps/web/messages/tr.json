@@ -352,15 +352,15 @@
     "cta": "Rafını oluşturmaya başla",
     "nav": {
       "features": "Özellikler",
-      "signIn": "Giriş yap",
-      "start": "Başla"
+      "signIn": "Giriş yap"
     },
     "hero": {
       "eyebrow": "Yıl yıl okuma serüvenin",
       "titleStart": "Her kitap,",
       "titleEnd": "hikâyenin bir parçası.",
       "description": "MyShelfie kitaplarını, okuma ilerlemeni ve sevdiğin satırları tek ve sakin bir yerde tutar; okumanın zaman içinde nasıl büyüdüğünü gösterir.",
-      "haveAccount": "Hesabım var",
+      "haveAccount": "Zaten hesabın var mı?",
+      "signIn": "Giriş yap",
       "points": {
         "free": "Ücretsiz",
         "noSignup": "Kayıt gerekmez",
