@@ -5,6 +5,15 @@ import { databaseHost, pingDatabase } from "../prisma.js";
 
 export const healthRouter = Router();
 
+/** Kök adres: tarayıcıda açılınca 404 yerine ne olduğunu söylesin. */
+healthRouter.get("/", (_req, res) => {
+  res.json({
+    name: "MyShelfie API",
+    status: "ok",
+    health: "/health",
+  });
+});
+
 /** Boş olan Firebase değişkenlerinin adları (değerleri değil). */
 function missingFirebaseVars() {
   return Object.entries({

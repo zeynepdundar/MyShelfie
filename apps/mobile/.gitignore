@@ -1,0 +1,19 @@
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Native klasörler (Continuous Native Generation ile üretilir)
+/ios
+/android
+
+# Anahtarlar
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+
+.env*.local

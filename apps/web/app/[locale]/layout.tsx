@@ -8,6 +8,9 @@ import '../globals.css';
 import { HomeLayout } from "@/components/layout/HomeLayout";
 
 
+/** Sitenin herkese açık adresi. Paylaşım önizlemelerindeki mutlak linkler buradan üretilir. */
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://myshelfie.space";
+
 export async function generateMetadata({
   params,
 }: {
@@ -16,9 +19,39 @@ export async function generateMetadata({
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "meta" });
 
+  const lang = locale === "tr" ? "tr" : "en";
+  const description = t("description");
+  // Paylaşım önizlemesi (LinkedIn, WhatsApp, X...): görseller public/og/ altında
+  const image = {
+    url: `/og/${lang}.jpg`,
+    width: 1200,
+    height: 630,
+    alt: "MyShelfie",
+  };
+
   return {
+    metadataBase: new URL(SITE_URL),
     title: "MyShelfie",
-    description: t("description"),
+    description,
+    openGraph: {
+      type: "website",
+      siteName: "MyShelfie",
+      title: "MyShelfie",
+      description,
+      url: `/${lang}`,
+      locale: lang === "tr" ? "tr_TR" : "en_US",
+      alternateLocale: lang === "tr" ? "en_US" : "tr_TR",
+      images: [image],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "MyShelfie",
+      description,
+      images: [image.url],
+    },
+    alternates: {
+      languages: { en: "/en", tr: "/tr" },
+    },
     icons: {
       icon: "/logo-books.svg",
       shortcut: "/logo-books.svg",

@@ -6,7 +6,7 @@ Okuma takip uygulaması. Monorepo olarak pnpm workspaces ile yönetiliyor.
 apps/
   web/        Next.js 15 uygulaması (mevcut arayüz)
   api/        Node.js backend — Express + TypeScript, Prisma 7 + PostgreSQL
-  mobile/     Expo uygulaması (henüz kurulmadı)
+  mobile/     Expo SDK 57 + React Native — iOS/Android uygulaması
 packages/
   types/      Book, Quote, GoogleBook — üç uygulamanın paylaştığı tipler
 ```
@@ -32,6 +32,7 @@ Ayrıntılar: `apps/api/README.md`.
 ```bash
 pnpm dev:web          # Next.js — http://localhost:3000
 pnpm dev:api          # Express  — http://localhost:4000
+pnpm dev:mobile       # Expo     — QR kodu Expo Go ile okut (bkz. apps/mobile/README.md)
 
 pnpm build            # bütün paketleri derler
 pnpm typecheck        # bütün paketleri tip kontrolünden geçirir
