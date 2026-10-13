@@ -98,6 +98,8 @@ const tr: Messages = {
     searchPlaceholder: "Kitap adı, yazar ya da ISBN",
     searching: "Aranıyor…",
     noResults: "Sonuç yok. Kitabı elle ekleyebilirsin.",
+    searchError: "Kitap araması şu an çalışmıyor. Kitabı elle ekleyebilirsin.",
+    keyRejected: "Google Books API anahtarını reddetti. EXPO_PUBLIC_GOOGLE_BOOKS_API_KEY değerini ve Google Cloud'daki anahtar kısıtlamalarını kontrol et.",
     manual: "Elle ekle",
     noKey: "Kitap araması ayarlanmamış (EXPO_PUBLIC_GOOGLE_BOOKS_API_KEY). Yine de kitapları elle ekleyebilirsin.",
     titleLabel: "Kitap adı",

@@ -20,7 +20,7 @@ import { ModalHeader } from "@/components/ModalHeader";
 import { Txt } from "@/components/Txt";
 import { useI18n } from "@/i18n";
 import { statusPatch, type BookStatusKey } from "@/lib/bookStatus";
-import { hasGoogleBooksKey, searchGoogleBooks } from "@/lib/googleBooks";
+import { GoogleBooksError, hasGoogleBooksKey, searchGoogleBooks } from "@/lib/googleBooks";
 import { useBooks } from "@/providers/BooksProvider";
 import { colors, radius } from "@/theme";
 
@@ -41,6 +41,7 @@ export default function AddBook() {
   const [results, setResults] = useState<GoogleBook[]>([]);
   const [searching, setSearching] = useState(false);
   const [searched, setSearched] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
 
   const [draft, setDraft] = useState<Draft | null>(hasGoogleBooksKey ? null : EMPTY);
   const [status, setStatus] = useState<BookStatusKey>("inProgress");
@@ -53,16 +54,25 @@ export default function AddBook() {
     if (!hasGoogleBooksKey || q.length < 2) {
       setResults([]);
       setSearched(false);
+      setSearchError(null);
       return;
     }
     let cancelled = false;
     const timer = setTimeout(async () => {
       setSearching(true);
+      setSearchError(null);
       try {
         const items = await searchGoogleBooks(q);
         if (!cancelled) setResults(items);
-      } catch {
-        if (!cancelled) setResults([]);
+      } catch (error) {
+        if (!cancelled) {
+          setResults([]);
+          setSearchError(
+            error instanceof GoogleBooksError && error.isKeyProblem
+              ? t("addBook.keyRejected")
+              : t("addBook.searchError")
+          );
+        }
       } finally {
         if (!cancelled) {
           setSearching(false);
@@ -184,7 +194,9 @@ export default function AddBook() {
               </View>
             ) : null}
 
-            {!searching && searched && results.length === 0 ? (
+            {searchError ? <Txt style={styles.error}>{searchError}</Txt> : null}
+
+            {!searching && searched && !searchError && results.length === 0 ? (
               <Txt variant="caption">{t("addBook.noResults")}</Txt>
             ) : null}
 

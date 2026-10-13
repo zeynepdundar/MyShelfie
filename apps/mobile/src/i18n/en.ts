@@ -97,6 +97,8 @@ const en = {
     searchPlaceholder: "Title, author or ISBN",
     searching: "Searching…",
     noResults: "No matches. You can add it manually.",
+    searchError: "Book search isn't available right now. You can add it manually.",
+    keyRejected: "Google Books rejected the API key. Check EXPO_PUBLIC_GOOGLE_BOOKS_API_KEY and the key's restrictions in Google Cloud.",
     manual: "Add manually",
     noKey: "Book search isn't set up (EXPO_PUBLIC_GOOGLE_BOOKS_API_KEY). You can still add books manually.",
     titleLabel: "Title",
