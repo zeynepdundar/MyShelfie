@@ -3,8 +3,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { useLocale, useTranslations } from "next-intl";
-// Veri indirme şimdilik kapalı; açılınca Download ikonu geri eklenecek.
-import { AlertTriangle, /* Download, */ Trash2, X } from "lucide-react";
+import { AlertTriangle, Download, Trash2, X } from "lucide-react";
 
 import type { RootState } from "@/lib/store";
 import { useAppDispatch } from "@/lib/hooks";
@@ -14,7 +13,7 @@ import {
   type AuthUser,
 } from "@/lib/authSlice";
 import { clearBooks } from "@/lib/booksSlice";
-import { ACCOUNT_DELETED_FLAG /* , downloadUserData */ } from "@/lib/accountData";
+import { ACCOUNT_DELETED_FLAG, downloadUserData } from "@/lib/accountData";
 import { Button } from "@/components/ui/button";
 import { GlassCard, SectionHeader } from "@/components/ui/glass";
 
@@ -38,10 +37,6 @@ export function AccountDataSection({ user }: { user: AuthUser }) {
   const books = useSelector((state: RootState) => state.books.books);
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  /* VERİ İNDİRME — şimdilik kapalı. Açmak için bu bloğu, aşağıdaki
-     "Verilerini indir" satırını, dialogdaki onDownload prop'unu ve
-     importlardaki Download / downloadUserData'yı yorumdan çıkar.
-
   const download = () =>
     downloadUserData(
       {
@@ -51,14 +46,13 @@ export function AccountDataSection({ user }: { user: AuthUser }) {
       },
       books
     );
-  */
 
   return (
     <section className="min-w-0">
       <SectionHeader title={t("title")} description={t("hint")} />
 
       <GlassCard className="py-2">
-        {/* Verilerini indir — şimdilik kapalı
+        {/* Verilerini indir */}
         <div className="flex flex-col gap-3 border-b border-white/10 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-8">
           <div className="min-w-0">
             <p className="text-sm font-medium text-white">{t("export.title")}</p>
@@ -74,7 +68,6 @@ export function AccountDataSection({ user }: { user: AuthUser }) {
             {t("export.action")}
           </Button>
         </div>
-        */}
 
         <div className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-8">
           <div className="min-w-0">
@@ -98,7 +91,7 @@ export function AccountDataSection({ user }: { user: AuthUser }) {
         <DeleteAccountDialog
           user={user}
           bookCount={books.length}
-          // onDownload={download}
+          onDownload={download}
           onClose={() => setDialogOpen(false)}
         />
       )}
