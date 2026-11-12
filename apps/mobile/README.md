@@ -61,3 +61,20 @@ src/
 - Kitap düzenleme (tarih, not, sayfa), istatistik ekranı
 - Fotoğraftan OCR ile alıntı ekleme
 - EAS Build + App Store / Play Store yayını
+
+## Yayın (EAS)
+
+`.env` git'e girmediği için EAS build'e gitmez. Build'deki değişkenler
+EAS ortamlarından gelir (`eas.json` → `environment`):
+
+```bash
+eas env:create --environment production --name EXPO_PUBLIC_API_URL --value https://<render-api> --visibility plaintext
+eas env:create --environment production --name EXPO_PUBLIC_GOOGLE_BOOKS_API_KEY --value <key> --visibility sensitive
+# preview için aynısını --environment preview ile
+```
+
+- `eas build --profile preview --platform android` → telefona kurulabilen APK
+- `eas build --profile production --platform all` → mağaza build'leri
+- `eas submit --platform ios` → App Store Connect / TestFlight
+- Android'de ilk AAB Play Console'a elle yüklenir; sonrakiler `eas submit --platform android`.
+- Sürüm numarası `app.json` → `version`; build numarası EAS'ta (`autoIncrement`).

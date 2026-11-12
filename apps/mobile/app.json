@@ -2,7 +2,7 @@
   "expo": {
     "name": "MyShelfie",
     "slug": "myshelfie",
-    "version": "0.1.0",
+    "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myshelfie",
@@ -13,6 +13,9 @@
       "supportsTablet": false,
       "infoPlist": {
         "CFBundleAllowMixedLocalizations": true
+      },
+      "config": {
+        "usesNonExemptEncryption": false
       }
     },
     "android": {
@@ -43,6 +46,13 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "a37f08b8-f5e3-4710-800c-f1c92cd88d6a"
+      }
+    },
+    "owner": "zeyneppdndr"
   }
 }
