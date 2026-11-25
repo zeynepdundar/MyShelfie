@@ -1,4 +1,3 @@
-import type { GoogleBook } from "@shelfie/types";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
@@ -20,7 +19,8 @@ import { ModalHeader } from "@/components/ModalHeader";
 import { Txt } from "@/components/Txt";
 import { useI18n } from "@/i18n";
 import { statusPatch, type BookStatusKey } from "@/lib/bookStatus";
-import { GoogleBooksError, hasGoogleBooksKey, searchGoogleBooks } from "@/lib/googleBooks";
+import { type BookSearchResult, hasBookSearch, searchBooks } from "@/lib/bookSearch";
+import { GoogleBooksError } from "@/lib/googleBooks";
 import { useBooks } from "@/providers/BooksProvider";
 import { colors, radius } from "@/theme";
 
@@ -29,6 +29,8 @@ interface Draft {
   author: string;
   pages: string;
   coverUrl?: string;
+  isbn?: string;
+  publishedYear?: number;
 }
 
 const EMPTY: Draft = { title: "", author: "", pages: "" };
@@ -38,12 +40,12 @@ export default function AddBook() {
   const { addBook } = useBooks();
 
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<GoogleBook[]>([]);
+  const [results, setResults] = useState<BookSearchResult[]>([]);
   const [searching, setSearching] = useState(false);
   const [searched, setSearched] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
 
-  const [draft, setDraft] = useState<Draft | null>(hasGoogleBooksKey ? null : EMPTY);
+  const [draft, setDraft] = useState<Draft | null>(hasBookSearch ? null : EMPTY);
   const [status, setStatus] = useState<BookStatusKey>("inProgress");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -51,7 +53,7 @@ export default function AddBook() {
   // Yazmayı bırakınca ara (400 ms).
   useEffect(() => {
     const q = query.trim();
-    if (!hasGoogleBooksKey || q.length < 2) {
+    if (!hasBookSearch || q.length < 2) {
       setResults([]);
       setSearched(false);
       setSearchError(null);
@@ -62,7 +64,7 @@ export default function AddBook() {
       setSearching(true);
       setSearchError(null);
       try {
-        const items = await searchGoogleBooks(q);
+        const items = await searchBooks(q);
         if (!cancelled) setResults(items);
       } catch (error) {
         if (!cancelled) {
@@ -86,12 +88,14 @@ export default function AddBook() {
     };
   }, [query]);
 
-  const pick = (item: GoogleBook) =>
+  const pick = (item: BookSearchResult) =>
     setDraft({
-      title: item.volumeInfo.title ?? "",
-      author: item.volumeInfo.authors?.join(", ") ?? "",
-      pages: item.volumeInfo.pageCount ? String(item.volumeInfo.pageCount) : "",
-      coverUrl: item.volumeInfo.imageLinks?.thumbnail,
+      title: item.title,
+      author: item.authors.join(", "),
+      pages: item.pages ? String(item.pages) : "",
+      coverUrl: item.coverUrl,
+      isbn: item.isbn,
+      publishedYear: item.publishedYear,
     });
 
   const save = async () => {
@@ -108,6 +112,8 @@ export default function AddBook() {
         author: draft.author.trim(),
         pages: Number.parseInt(draft.pages, 10) || 0,
         coverUrl: draft.coverUrl,
+        isbn: draft.isbn,
+        publishedYear: draft.publishedYear,
         isCompleted: flags.isCompleted ?? false,
         wantToRead: flags.wantToRead ?? false,
         isFavorite: false,
@@ -136,7 +142,7 @@ export default function AddBook() {
           <View style={styles.form}>
             <View style={styles.preview}>
               <BookCover uri={draft.coverUrl} title={draft.title || "?"} width={72} />
-              {hasGoogleBooksKey ? (
+              {hasBookSearch ? (
                 <Button
                   title={t("common.cancel")}
                   variant="ghost"
@@ -206,13 +212,13 @@ export default function AddBook() {
                 onPress={() => pick(item)}
                 style={({ pressed }) => [styles.result, pressed && { backgroundColor: colors.controlPressed }]}
               >
-                <BookCover uri={item.volumeInfo.imageLinks?.thumbnail} title={item.volumeInfo.title} width={44} />
+                <BookCover uri={item.coverUrl} title={item.title} width={44} />
                 <View style={styles.resultText}>
                   <Txt variant="label" numberOfLines={2}>
-                    {item.volumeInfo.title}
+                    {item.title}
                   </Txt>
                   <Txt variant="caption" numberOfLines={1}>
-                    {item.volumeInfo.authors?.join(", ") ?? "—"}
+                    {item.authors.join(", ") || "—"}
                   </Txt>
                 </View>
                 <Ionicons name="add-circle" size={24} color={colors.yellow400} />
@@ -228,7 +234,7 @@ export default function AddBook() {
           </View>
         )}
 
-        {!hasGoogleBooksKey ? <Txt variant="caption">{t("addBook.noKey")}</Txt> : null}
+        {!hasBookSearch ? <Txt variant="caption">{t("addBook.noKey")}</Txt> : null}
       </ScrollView>
     </KeyboardAvoidingView>
   );

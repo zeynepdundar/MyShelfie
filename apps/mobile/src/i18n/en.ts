@@ -100,7 +100,7 @@ const en = {
     searchError: "Book search isn't available right now. You can add it manually.",
     keyRejected: "Google Books rejected the API key. Check EXPO_PUBLIC_GOOGLE_BOOKS_API_KEY and the key's restrictions in Google Cloud.",
     manual: "Add manually",
-    noKey: "Book search isn't set up (EXPO_PUBLIC_GOOGLE_BOOKS_API_KEY). You can still add books manually.",
+    noKey: "Book search isn't set up (EXPO_PUBLIC_API_URL or EXPO_PUBLIC_GOOGLE_BOOKS_API_KEY). You can still add books manually.",
     titleLabel: "Title",
     authorLabel: "Author",
     pagesLabel: "Pages",
