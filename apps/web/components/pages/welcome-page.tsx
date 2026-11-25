@@ -32,7 +32,7 @@ export function WelcomeScreen({
 
       <header className="mx-auto flex w-full max-w-7xl items-center gap-3 px-6 py-8 sm:px-10 lg:px-16">
         <span className="flex size-10 items-center justify-center rounded-tile border border-white/20 bg-white/10 backdrop-blur-md">
-          <Image src="/logo-books.svg" alt="" width={22} height={22} />
+          <Image src="/logo-books.svg" alt="" width={24} height={24} />
         </span>
         <span className="text-lg font-semibold tracking-tight">MyShelfie</span>
       </header>

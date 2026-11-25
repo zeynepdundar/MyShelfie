@@ -273,7 +273,7 @@ function LandingNav({ onSignIn }: Pick<LandingPageProps, "onSignIn">) {
       <nav className="mx-auto flex w-full max-w-7xl items-center gap-3 px-4 py-4 sm:px-10 lg:px-16">
         <a href="#" className="flex shrink-0 items-center gap-2.5 sm:gap-3" onClick={() => window.scrollTo({ top: 0 })}>
           <span className="flex size-10 items-center justify-center rounded-tile border border-white/20 bg-white/10 backdrop-blur-md">
-            <Image src="/logo-books.svg" alt="" width={22} height={22} />
+            <Image src="/logo-books.svg" alt="" width={24} height={24} />
           </span>
           <span className="text-base font-semibold tracking-tight sm:text-lg">MyShelfie</span>
         </a>
@@ -334,7 +334,7 @@ function LandingFooter() {
     <footer className="border-t border-white/10">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-6 py-8 text-sm text-white/60 sm:px-10 md:flex-row md:items-center lg:px-16">
         <div className="flex items-center gap-2">
-          <Image src="/logo-books.svg" alt="" width={18} height={18} />
+          <Image src="/logo-books.svg" alt="" width={20} height={20} />
           <span>© {new Date().getFullYear()} MyShelfie</span>
         </div>
 

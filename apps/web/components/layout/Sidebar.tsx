@@ -43,8 +43,8 @@ function SidebarBody({ onNavigate }: { onNavigate?: () => void }) {
           <Image
             src="/logo-books.svg"
             alt=""
-            width={22}
-            height={22}
+            width={24}
+            height={24}
             className="shrink-0"
           />
           <p
@@ -77,11 +77,7 @@ function SidebarBody({ onNavigate }: { onNavigate?: () => void }) {
                   : "text-white/50 hover:bg-white/[0.08] hover:text-white/80"
               }`}
             >
-              <Icon
-                className={`h-[26px] w-[26px] shrink-0 transition-opacity duration-200 ${
-                  isActive ? "opacity-100" : "opacity-70"
-                }`}
-              />
+              <Icon active={isActive} className="h-[26px] w-[26px] shrink-0" />
               {view.label}
             </Link>
           );
@@ -121,7 +117,7 @@ export function SidebarMobileBar() {
       style={darkGlassStyle}
     >
       <Link href={`/${locale}`} className="flex items-center gap-2">
-        <Image src="/logo-books.svg" alt="" width={20} height={20} />
+        <Image src="/logo-books.svg" alt="" width={22} height={22} />
         <span
           className="text-lg font-light italic text-white"
           style={{ fontFamily: "var(--font-display)" }}

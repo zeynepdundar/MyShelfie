@@ -1,25 +1,24 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 64 64" role="img" aria-label="Books on a shelf">
   <title>Books on a shelf</title>
   <g fill="none" stroke="none">
-    <!-- Shelf -->
-    <rect x="6" y="50" width="52" height="4" rx="2" fill="#ffffff"/>
+    <!-- Shelf: eskitilmiş altın -->
+    <rect x="6" y="50" width="52" height="4" rx="2" fill="#C5A773"/>
 
-    <!-- Book 1 -->
-    <rect x="10" y="20" width="10" height="28" rx="2" fill="#ffffff"/>
-    <rect x="12" y="24" width="6" height="2" fill="#0a5b6f" opacity="0.35"/>
+    <!-- Book 1: kırık krem -->
+    <rect x="10" y="20" width="10" height="28" rx="2" fill="#DFD1AE"/>
+    <rect x="12" y="24" width="6" height="2" fill="#5B4A32" opacity="0.35"/>
 
-    <!-- Book 2 (taller) -->
-    <rect x="22" y="16" width="12" height="32" rx="2" fill="#ffffff"/>
-    <rect x="25" y="20" width="6" height="2" fill="#0a5b6f" opacity="0.35"/>
+    <!-- Book 2 (taller): mat zeytin -->
+    <rect x="22" y="16" width="12" height="32" rx="2" fill="#9BA481"/>
+    <rect x="25" y="20" width="6" height="2" fill="#5B4A32" opacity="0.35"/>
 
-    <!-- Book 3 (leaning) -->
+    <!-- Book 3 (leaning): soluk bordo -->
     <g transform="rotate(-10 40 36)">
-      <rect x="34" y="18" width="12" height="30" rx="2" fill="#ffffff"/>
-      <rect x="37" y="22" width="6" height="2" fill="#0a5b6f" opacity="0.35"/>
+      <rect x="34" y="18" width="12" height="30" rx="2" fill="#B27D78"/>
+      <rect x="37" y="22" width="6" height="2" fill="#5B4A32" opacity="0.35"/>
     </g>
 
-    <!-- Book 4 (thin) -->
-    <rect x="48" y="24" width="6" height="24" rx="1.5" fill="#ffffff"/>
+    <!-- Book 4 (thin): eskitilmiş altın -->
+    <rect x="48" y="24" width="6" height="24" rx="1.5" fill="#C5A773"/>
   </g>
 </svg>
-

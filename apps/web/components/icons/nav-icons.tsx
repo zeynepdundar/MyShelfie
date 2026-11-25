@@ -1,16 +1,30 @@
 /**
  * Menü ikonları: gravür / eski kitap baskısı havasında, fildişi yüzeyler ve
- * sepya detay çizgileri. Koyu cam menünün üstünde yumuşak durur; renkler
- * sabit, etkin olmayan satırların ikonu Sidebar'da biraz soluklaştırılır.
+ * sepya detay çizgileri. Seçili menü satırında ikon, logodaki rafla aynı
+ * eskitilmiş altın tonuna geçer (public/logo-books.svg).
  */
 
-const IVORY = "#ece2c8";
-const PARCHMENT = "#d9c9a3";
-const EDGE = "#b8a47a";
-const SEPIA = "#5b4a32";
+type Palette = { ivory: string; parchment: string; edge: string; sepia: string };
+
+const DEFAULT: Palette = {
+  ivory: "#ece2c8",
+  parchment: "#d9c9a3",
+  edge: "#b8a47a",
+  sepia: "#5b4a32",
+};
+
+/** Eskitilmiş altın #C5A773 ve onun bir ton koyusu. */
+const GOLD: Palette = {
+  ivory: "#C5A773",
+  parchment: "#B89A66",
+  edge: "#9C8455",
+  sepia: "#4A3B26",
+};
 
 type IconProps = {
   className?: string;
+  /** Seçili menü satırı: ikon altın tonda çizilir. */
+  active?: boolean;
 };
 
 const BASE = {
@@ -23,7 +37,8 @@ const BASE = {
 } as const;
 
 /** Kütüphane: rafta dik duran üç kitap ve yanlarına yaslanmış bir kitap. */
-export function LibraryIcon({ className }: IconProps) {
+export function LibraryIcon({ className, active }: IconProps) {
+  const { ivory: IVORY, parchment: PARCHMENT, edge: EDGE, sepia: SEPIA } = active ? GOLD : DEFAULT;
   return (
     <svg {...BASE} className={className}>
       {/* Kitap gövdeleri */}
@@ -48,7 +63,8 @@ export function LibraryIcon({ className }: IconProps) {
 }
 
 /** İstatistikler: eksenleri işaretli, noktalarla yükselen bir çizgi grafik. */
-export function StatsIcon({ className }: IconProps) {
+export function StatsIcon({ className, active }: IconProps) {
+  const { ivory: IVORY, parchment: PARCHMENT, sepia: SEPIA } = active ? GOLD : DEFAULT;
   return (
     <svg {...BASE} className={className}>
       {/* Eksenler */}
@@ -75,7 +91,8 @@ export function StatsIcon({ className }: IconProps) {
 }
 
 /** Hazinem: yıldızlı kitap ayracı. */
-export function TreasuresIcon({ className }: IconProps) {
+export function TreasuresIcon({ className, active }: IconProps) {
+  const { ivory: IVORY, parchment: PARCHMENT, edge: EDGE, sepia: SEPIA } = active ? GOLD : DEFAULT;
   return (
     <svg {...BASE} className={className}>
       <path

@@ -80,7 +80,7 @@ export function LegalDocumentPage({ content: byLocale, lastUpdated }: LegalDocum
       <div className="mb-6 flex items-center justify-between gap-4">
         <Link href={`/${locale}`} className="flex items-center gap-2 text-white">
           <span className="flex size-9 items-center justify-center rounded-tile border border-white/20 bg-white/10 backdrop-blur-md">
-            <Image src="/logo-books.svg" alt="" width={20} height={20} />
+            <Image src="/logo-books.svg" alt="" width={22} height={22} />
           </span>
           <span className="font-semibold tracking-tight">MyShelfie</span>
         </Link>
