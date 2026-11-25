@@ -1,8 +1,8 @@
-import Ionicons from "@expo/vector-icons/Ionicons";
 import { BlurView } from "expo-blur";
 import { Tabs } from "expo-router";
 import { Platform, StyleSheet, View } from "react-native";
 
+import { AccountTabIcon, LibraryTabIcon, TreasuresTabIcon } from "@/components/TabIcons";
 import { useI18n } from "@/i18n";
 import { colors, fonts } from "@/theme";
 
@@ -36,27 +36,21 @@ export default function TabsLayout() {
         name="index"
         options={{
           title: t("tabs.library"),
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? "library" : "library-outline"} size={22} color={color} />
-          ),
+          tabBarIcon: ({ focused }) => <LibraryTabIcon focused={focused} />,
         }}
       />
       <Tabs.Screen
         name="treasures"
         options={{
           title: t("tabs.treasures"),
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? "sparkles" : "sparkles-outline"} size={22} color={color} />
-          ),
+          tabBarIcon: ({ focused }) => <TreasuresTabIcon focused={focused} />,
         }}
       />
       <Tabs.Screen
         name="account"
         options={{
           title: t("tabs.account"),
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? "person-circle" : "person-circle-outline"} size={24} color={color} />
-          ),
+          tabBarIcon: ({ focused }) => <AccountTabIcon focused={focused} />,
         }}
       />
     </Tabs>
