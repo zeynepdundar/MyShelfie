@@ -27,7 +27,7 @@
       "hint": "The books you marked with a heart.",
       "count": "{count} books",
       "emptyTitle": "No favorites yet",
-      "emptyBody": "Mark a book with a heart on the Statistics page and it will show up here.",
+      "emptyBody": "Mark a book with a heart on the Library page and it will show up here.",
       "addQuote": "Add quote",
       "remove": "Remove from favorites",
       "scrollLeft": "Scroll left",
