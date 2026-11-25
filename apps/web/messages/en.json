@@ -230,7 +230,9 @@
       "export": "Export CSV",
       "exportHint": "Download the books in this list as a CSV file"
     },
-    "coverAlt": "{title} cover"
+    "coverAlt": "{title} cover",
+    "import": "Import CSV",
+    "importHint": "Import books from a CSV file (MyShelfie, Goodreads or StoryGraph export)"
   },
   "stats": {
     "subtitle": "How your reading is spread across years and months.",
@@ -416,6 +418,36 @@
       "label": "Footer",
       "contact": "Contact",
       "language": "Language"
+    }
+  },
+  "importCsv": {
+    "title": "Import books from CSV",
+    "subtitle": "Bring your library over from a spreadsheet, Goodreads or StoryGraph.",
+    "close": "Close",
+    "cancel": "Cancel",
+    "back": "Choose another file",
+    "finish": "Done",
+    "pick": "Choose a CSV file or drop it here",
+    "pickHint": "Needs at least a Title and an Author column",
+    "formats": "Works with MyShelfie's own CSV export, Goodreads (My Books → Import and export) and StoryGraph exports. Books already in your library are skipped.",
+    "summary": {
+      "ready": "{count, plural, =0 {No new books to import} one {# book ready to import} other {# books ready to import}}",
+      "duplicates": "{count, plural, one {# book is already in your library and will be skipped} other {# books are already in your library and will be skipped}}",
+      "skipped": "{count, plural, one {# row skipped (missing title or author): line {lines}} other {# rows skipped (missing title or author): lines {lines}}}"
+    },
+    "sample": "First books",
+    "more": "and {count} more",
+    "confirm": "{count, plural, one {Import # book} other {Import # books}}",
+    "importing": "Importing your books…",
+    "done": "{count, plural, one {# book added to your library.} other {# books added to your library.}}",
+    "errors": {
+      "empty": "This file has no books in it.",
+      "noTitleColumn": "Couldn't find a Title column in this file.",
+      "noAuthorColumn": "Couldn't find an Author column in this file.",
+      "tooMany": "This file has more than {limit} new books. Split it into smaller files and import them one by one.",
+      "tooLarge": "This file is larger than {mb} MB.",
+      "unreadable": "Couldn't read this file. Make sure it's a CSV.",
+      "failed": "The import didn't go through, so nothing was added. Please try again."
     }
   }
 }

@@ -6,6 +6,7 @@ import {
   Check,
   ChevronDown,
   Download,
+  FileUp,
   Heart,
   Play,
   Plus,
@@ -19,6 +20,7 @@ import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { addBook, fetchUserBooks, updateBook } from "@/lib/booksSlice";
 import { Button } from "@/components/ui/button";
 import { AddBookModal } from "@/components/books/AddBookModal";
+import { ImportCsvModal } from "@/components/books/ImportCsvModal";
 import { BookCard } from "@/components/books/BookCard";
 import { BookCover } from "@/components/books/BookCover";
 import { booksToCsv, downloadCsv } from "@/lib/exportCsv";
@@ -62,6 +64,7 @@ export function LibraryPage({ user }: LibraryPageProps) {
   const [filter, setFilter] = useState<ReadingFilter>("all");
   const [showWantToRead, setShowWantToRead] = useState(true);
   const [showAddBookModal, setShowAddBookModal] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
   const [coverCache, setCoverCache] = useState<Record<string, string>>({});
   const attemptedCovers = useRef<Set<string>>(new Set());
   // Arama kaynağı geçici olarak yanıt vermiyorsa bu oturumda kapak aramayı bırak.
@@ -187,14 +190,21 @@ export function LibraryPage({ user }: LibraryPageProps) {
             <p className="sf-page-header-sub">{t("subtitle")}</p>
           </div>
 
-          <Button
-            onClick={() => setShowAddBookModal(true)}
-            size="lg"
-            className="shrink-0"
-          >
-            <Plus className="mr-2 h-4 w-4" />
-            {navT("addBook")}
-          </Button>
+          <div className="flex shrink-0 flex-wrap gap-2">
+            <Button
+              onClick={() => setShowImportModal(true)}
+              size="lg"
+              variant="outline"
+              title={t("importHint")}
+            >
+              <FileUp className="mr-2 h-4 w-4" />
+              {t("import")}
+            </Button>
+            <Button onClick={() => setShowAddBookModal(true)} size="lg">
+              <Plus className="mr-2 h-4 w-4" />
+              {navT("addBook")}
+            </Button>
+          </div>
         </header>
 
         {status === "failed" && (
@@ -417,6 +427,15 @@ export function LibraryPage({ user }: LibraryPageProps) {
           </GlassCard>
         </section>
       </div>
+
+      {showImportModal && (
+        <ImportCsvModal
+          isOpen={showImportModal}
+          onClose={() => setShowImportModal(false)}
+          existingBooks={books}
+          onImported={() => void dispatch(fetchUserBooks())}
+        />
+      )}
 
       {showAddBookModal && (
         <AddBookModal

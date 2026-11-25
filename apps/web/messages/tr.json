@@ -230,7 +230,9 @@
       "export": "CSV indir",
       "exportHint": "Bu listedeki kitapları CSV dosyası olarak indir"
     },
-    "coverAlt": "{title} kapağı"
+    "coverAlt": "{title} kapağı",
+    "import": "CSV içe aktar",
+    "importHint": "Kitapları CSV dosyasından içe aktar (MyShelfie, Goodreads ya da StoryGraph dışa aktarımı)"
   },
   "stats": {
     "subtitle": "Okuma alışkanlıklarının yıllara ve aylara dağılımı.",
@@ -416,6 +418,36 @@
       "label": "Alt bilgi",
       "contact": "İletişim",
       "language": "Dil"
+    }
+  },
+  "importCsv": {
+    "title": "CSV'den kitap içe aktar",
+    "subtitle": "Kütüphaneni bir tablodan, Goodreads'ten ya da StoryGraph'tan taşı.",
+    "close": "Kapat",
+    "cancel": "Vazgeç",
+    "back": "Başka dosya seç",
+    "finish": "Tamam",
+    "pick": "Bir CSV dosyası seç ya da buraya bırak",
+    "pickHint": "En az Title ve Author sütunları olmalı",
+    "formats": "MyShelfie'nin kendi CSV dışa aktarımı, Goodreads (My Books → Import and export) ve StoryGraph dışa aktarımlarıyla çalışır. Kütüphanende zaten olan kitaplar atlanır.",
+    "summary": {
+      "ready": "{count, plural, =0 {Eklenecek yeni kitap yok} other {# kitap içe aktarılmaya hazır}}",
+      "duplicates": "{count, plural, other {# kitap zaten kütüphanende, atlanacak}}",
+      "skipped": "{count, plural, other {# satır atlandı (adı ya da yazarı eksik): satır {lines}}}"
+    },
+    "sample": "İlk kitaplar",
+    "more": "ve {count} kitap daha",
+    "confirm": "{count, plural, other {# kitabı içe aktar}}",
+    "importing": "Kitapların içe aktarılıyor…",
+    "done": "{count, plural, other {# kitap kütüphanene eklendi.}}",
+    "errors": {
+      "empty": "Bu dosyada kitap yok.",
+      "noTitleColumn": "Dosyada Title (kitap adı) sütunu bulunamadı.",
+      "noAuthorColumn": "Dosyada Author (yazar) sütunu bulunamadı.",
+      "tooMany": "Bu dosyada {limit} kitaptan fazlası var. Daha küçük dosyalara bölüp tek tek içe aktar.",
+      "tooLarge": "Bu dosya {mb} MB'tan büyük.",
+      "unreadable": "Dosya okunamadı. CSV olduğundan emin ol.",
+      "failed": "İçe aktarma tamamlanamadı, hiçbir kitap eklenmedi. Tekrar dener misin?"
     }
   }
 }

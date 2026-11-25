@@ -1,6 +1,7 @@
 import type { Book, Quote } from "@shelfie/types";
 
 import { apiFetch } from "@/lib/api";
+import type { ImportBook } from "@/lib/importCsv";
 
 /* ============================================================================
    Kitap verisine erişim — tek kapı
@@ -19,6 +20,8 @@ export interface BooksRepo {
   update(bookId: string, updates: Partial<Book>): Promise<Partial<Book>>;
   remove(bookId: string): Promise<void>;
   addQuote(bookId: string, quote: NewQuote): Promise<Quote>;
+  /** Toplu ekleme (CSV): hepsi ya da hiçbiri. Eklenen kitap sayısını döner. */
+  importBooks(books: ImportBook[]): Promise<number>;
 }
 
 /** API'nin kitap gövdesinde kabul etmediği, sunucunun yönettiği alanlar. */
@@ -51,5 +54,12 @@ export const booksRepo: BooksRepo = {
       method: "POST",
       body: quote,
     }),
-};
 
+  async importBooks(books) {
+    const { imported } = await apiFetch<{ imported: number }>("/api/books/import", {
+      method: "POST",
+      body: { books },
+    });
+    return imported;
+  },
+};
