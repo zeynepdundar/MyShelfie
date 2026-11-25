@@ -1,5 +1,6 @@
 import { cert, getApps, initializeApp, type App } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
+import { getFirestore } from "firebase-admin/firestore";
 
 import { env, hasFirebaseCredentials } from "./env.js";
 import { serviceUnavailable, unauthorized } from "./http-error.js";
@@ -59,4 +60,21 @@ export async function verifyIdToken(token: string): Promise<AuthUser> {
     photoUrl: decoded.picture ?? null,
     isAnonymous: decoded.firebase?.sign_in_provider === "anonymous",
   };
+}
+
+/**
+ * Web uygulaması Postgres'e geçmeden önce kitaplar Firestore'da
+ * (users/{uid}/books) tutuluyordu. Hesap silinirken o eski kopya da silinir.
+ *
+ * Firebase kimlik bilgisi yoksa (yerelde DEV_USER_ID) atlanır. Hata olursa
+ * loglanır ama silme isteği düşmez: Postgres'teki asıl veri zaten silindi.
+ */
+export async function deleteLegacyFirestoreData(uid: string) {
+  if (!hasFirebaseCredentials) return;
+  try {
+    const firestore = getFirestore(getFirebaseApp());
+    await firestore.recursiveDelete(firestore.doc(`users/${uid}`));
+  } catch (error) {
+    console.error(`[me] eski Firestore verisi silinemedi (uid=${uid}):`, error);
+  }
 }

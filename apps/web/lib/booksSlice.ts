@@ -7,8 +7,7 @@ import { booksRepo, type NewBook, type NewQuote } from "@/lib/booksRepo";
    ediliyor ki eski importlar çalışmaya devam etsin. */
 export type { Book, Quote };
 
-/* Verinin nereden geldiği (API ya da Firestore) lib/booksRepo.ts'de seçilir;
-   bu dosya ikisini de aynı şekilde kullanır. */
+/* Veri erişimi lib/booksRepo.ts üzerinden (apps/api). */
 
 interface BooksState {
   books: Book[];

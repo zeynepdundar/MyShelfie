@@ -2,15 +2,13 @@ import { auth } from "@/lib/firebase";
 
 /* ============================================================================
    MyShelfie API istemcisi
-   NEXT_PUBLIC_API_URL tanımlıysa kitap verisi apps/api üzerinden okunur ve
-   yazılır; tanımlı değilse uygulama eskisi gibi doğrudan Firestore'u kullanır
-   (bkz. lib/booksRepo.ts). Böylece API yayına alınana kadar canlı site
-   etkilenmez, yerelde .env.local'a tek satır ekleyerek API denenebilir.
+   Kitap verisi ve katalog araması apps/api üzerinden gelir; NEXT_PUBLIC_API_URL
+   zorunludur (yerelde apps/web/.env.local, Vercel'de Production + Preview).
    ========================================================================== */
 
 const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/+$/, "");
 
-/** Kitap verisi API'den mi geliyor? */
+/** API adresi yapılandırılmış mı? */
 export const isApiEnabled = API_URL.length > 0;
 
 export class ApiError extends Error {

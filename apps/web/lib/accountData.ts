@@ -1,46 +1,16 @@
-import { collection, getDocs, writeBatch } from "firebase/firestore";
 import type { Book } from "@shelfie/types";
 
-import { apiFetch, isApiEnabled } from "@/lib/api";
-import { db } from "@/lib/firebase";
+import { apiFetch } from "@/lib/api";
 
 /* ============================================================================
    Hesap verisi — dışa aktarma ve silme
-   Kullanıcının bütün verisi users/{uid} altında duruyor:
-     users/{uid}/books/{bookId}  → kitap + notlar + alıntılar + favori bilgisi
-   Yeni bir alt koleksiyon eklenirse USER_COLLECTIONS'a da eklenmeli; yoksa
-   hesap silindiğinde o veri Firestore'da sahipsiz kalır.
+   Bütün veri Postgres'te (apps/api). Silme isteği API'ye gider; API,
+   geçişten önce Firestore'a yazılmış eski kopyaları da temizler.
    ========================================================================== */
 
-const USER_COLLECTIONS = ["books"] as const;
-
-/** Firestore bir batch'te en fazla 500 işlem kabul ediyor; pay bırakıyoruz. */
-const BATCH_LIMIT = 450;
-
-/**
- * Kullanıcının bütün verisini siler. Oturum açıkken çalışmalı: API token
- * ister, Firestore kuralları da yalnızca sahibine izin veriyor.
- *
- * API açıksa önce Postgres'teki veri silinir. Firestore her durumda
- * temizlenir: API'ye geçişte taşınan eski kopyalar orada kalmasın.
- */
-export async function deleteUserData(uid: string) {
-  if (isApiEnabled) await apiFetch<void>("/api/me", { method: "DELETE" });
-  await deleteFirestoreData(uid);
-}
-
-async function deleteFirestoreData(uid: string) {
-  for (const name of USER_COLLECTIONS) {
-    const snapshot = await getDocs(collection(db, "users", uid, name));
-
-    for (let i = 0; i < snapshot.docs.length; i += BATCH_LIMIT) {
-      const batch = writeBatch(db);
-      snapshot.docs
-        .slice(i, i + BATCH_LIMIT)
-        .forEach((document) => batch.delete(document.ref));
-      await batch.commit();
-    }
-  }
+/** Kullanıcının bütün verisini siler. Oturum açıkken çalışmalı (API token ister). */
+export async function deleteUserData() {
+  await apiFetch<void>("/api/me", { method: "DELETE" });
 }
 
 interface ExportAccount {

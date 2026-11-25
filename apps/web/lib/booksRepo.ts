@@ -1,22 +1,12 @@
-import {
-  arrayUnion,
-  collection,
-  deleteDoc,
-  doc,
-  getDocs,
-  setDoc,
-  updateDoc,
-} from "firebase/firestore";
 import type { Book, Quote } from "@shelfie/types";
 
-import { apiFetch, isApiEnabled } from "@/lib/api";
-import { auth, db } from "@/lib/firebase";
+import { apiFetch } from "@/lib/api";
 
 /* ============================================================================
    Kitap verisine erişim — tek kapı
-   booksSlice yalnızca bu arayüzü bilir. İki uygulaması var:
-     - apiRepo:       apps/api (Postgres) — NEXT_PUBLIC_API_URL tanımlıyken
-     - firestoreRepo: users/{uid}/books — eski yol, API yayına alınana kadar
+   booksSlice yalnızca bu arayüzü bilir. Veri apps/api üzerinden Postgres'te
+   durur (NEXT_PUBLIC_API_URL zorunlu). Firestore artık kullanılmıyor; eski
+   kayıtlar migrate:firestore ile taşındı, kalıntıları hesap silinirken API siler.
    ========================================================================== */
 
 export type NewBook = Omit<Book, "id" | "dateAdded">;
@@ -31,55 +21,6 @@ export interface BooksRepo {
   addQuote(bookId: string, quote: NewQuote): Promise<Quote>;
 }
 
-function currentUid() {
-  const user = auth.currentUser;
-  if (!user) throw new Error("Not signed in");
-  return user.uid;
-}
-
-/** Firestore `undefined` alanları reddediyor; boş opsiyonel alanlar hiç yazılmamalı. */
-function withoutUndefined<T extends object>(value: T): T {
-  return Object.fromEntries(
-    Object.entries(value).filter(([, v]) => v !== undefined)
-  ) as T;
-}
-
-const firestoreRepo: BooksRepo = {
-  async list() {
-    const snapshot = await getDocs(collection(db, "users", currentUid(), "books"));
-    return snapshot.docs.map((d) => d.data() as Book);
-  },
-
-  async add(bookData) {
-    const id = Date.now().toString();
-    const book: Book = { ...bookData, id, dateAdded: new Date().toISOString() };
-    await setDoc(doc(db, "users", currentUid(), "books", id), withoutUndefined(book));
-    return book;
-  },
-
-  async update(bookId, updates) {
-    await updateDoc(doc(db, "users", currentUid(), "books", bookId), updates);
-    return updates;
-  },
-
-  async remove(bookId) {
-    await deleteDoc(doc(db, "users", currentUid(), "books", bookId));
-  },
-
-  async addQuote(bookId, input) {
-    const quote: Quote = withoutUndefined({
-      ...input,
-      id: Date.now().toString(),
-      dateAdded: new Date().toISOString(),
-    });
-    // arrayUnion: başka sekmede eklenen alıntıların üstüne yazılmasın
-    await updateDoc(doc(db, "users", currentUid(), "books", bookId), {
-      quotes: arrayUnion(quote),
-    });
-    return quote;
-  },
-};
-
 /** API'nin kitap gövdesinde kabul etmediği, sunucunun yönettiği alanlar. */
 function bookBody(book: Partial<Book>) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -87,7 +28,7 @@ function bookBody(book: Partial<Book>) {
   return rest;
 }
 
-const apiRepo: BooksRepo = {
+export const booksRepo: BooksRepo = {
   list: () => apiFetch<Book[]>("/api/books"),
 
   add: (book) => apiFetch<Book>("/api/books", { method: "POST", body: bookBody(book) }),
@@ -112,4 +53,3 @@ const apiRepo: BooksRepo = {
     }),
 };
 
-export const booksRepo: BooksRepo = isApiEnabled ? apiRepo : firestoreRepo;

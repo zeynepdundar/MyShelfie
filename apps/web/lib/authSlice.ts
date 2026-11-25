@@ -24,7 +24,7 @@ import { deleteUserData } from "@/lib/accountData";
    Kimlik doğrulama
    Üç yol var:
    1. Misafir (anonymous): kayıt formu olmadan hemen başlar. Firebase gerçek bir
-      uid verir; Firestore kuralları bu uid ile çalışır.
+      uid verir; API verileri bu uid ile ayırır.
    2. Google: tek tıkla kalıcı hesap.
    3. E-posta + şifre: yedek yol.
    Misafir kullanıcı Google ya da e-posta bağladığında (link) uid DEĞİŞMEZ;
@@ -236,8 +236,8 @@ export function deleteVerificationFor(user: AuthUser): DeleteVerification {
  * 1. Önce kimlik yeniden doğrulanır. Firebase hassas işlemler için yakın
  *    zamanda giriş ister ("auth/requires-recent-login"); bunu en başta
  *    yapınca veri silinip hesap silinemeden kalma riski ortadan kalkar.
- * 2. Firestore verisi silinir. Kurallar yalnızca oturum sahibine izin
- *    verdiği için bu, hesap silinmeden ÖNCE olmalı.
+ * 2. Veri API'den silinir. API geçerli bir ID token istediği için bu,
+ *    hesap silinmeden ÖNCE olmalı.
  * 3. Firebase Auth kullanıcısı silinir; onAuthStateChanged oturumu kapatır.
  */
 export const deleteAccount = createAsyncThunk(
@@ -259,7 +259,7 @@ export const deleteAccount = createAsyncThunk(
         );
       }
 
-      await deleteUserData(current.uid);
+      await deleteUserData();
 
       try {
         await deleteUser(current);

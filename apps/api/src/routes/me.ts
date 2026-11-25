@@ -1,6 +1,7 @@
 import { Router } from "express";
 
 import { currentUser } from "../middleware/auth.js";
+import { deleteLegacyFirestoreData } from "../firebase.js";
 import { getPrisma } from "../prisma.js";
 import { toBookDto } from "../serializers.js";
 import { statusWhere } from "../services/books.js";
@@ -65,13 +66,16 @@ meRouter.get("/export", async (req, res) => {
 
 /**
  * Kullanıcının veritabanındaki her şeyini siler (kitaplar ve alıntılar
- * cascade ile gider). Firebase Auth hesabını istemci siler — yeniden kimlik
- * doğrulama orada yapılıyor. Tekrar çağrılması zararsız: her zaman 204.
+ * cascade ile gider). Postgres'e geçişten önce Firestore'a yazılmış eski
+ * kopyalar (users/{uid}) da silinir; istemcinin Firestore erişimi kapalı.
+ * Firebase Auth hesabını istemci siler — yeniden kimlik doğrulama orada
+ * yapılıyor. Tekrar çağrılması zararsız: her zaman 204.
  */
 meRouter.delete("/", async (req, res) => {
   const user = currentUser(req);
 
   await getPrisma().user.deleteMany({ where: { id: user.uid } });
+  await deleteLegacyFirestoreData(user.uid);
 
   res.status(204).end();
 });
