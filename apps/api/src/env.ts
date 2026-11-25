@@ -20,6 +20,12 @@ export const env = {
 
   databaseUrl: process.env.DATABASE_URL ?? "",
 
+  /**
+   * Kitap kataloğu (Open Library'den üretilen arama tablosu). Neon'da ayrı bir
+   * projede durur; tanımlı değilse uygulama veritabanında aranır (yerel geliştirme).
+   */
+  catalogDatabaseUrl: process.env.CATALOG_DATABASE_URL || process.env.DATABASE_URL || "",
+
   firebase: {
     projectId: process.env.FIREBASE_PROJECT_ID ?? "",
     clientEmail: process.env.FIREBASE_CLIENT_EMAIL ?? "",
@@ -39,3 +45,5 @@ export const hasFirebaseCredentials = Boolean(
 );
 
 export const hasDatabase = Boolean(env.databaseUrl);
+
+export const hasCatalog = Boolean(env.catalogDatabaseUrl);

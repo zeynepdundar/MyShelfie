@@ -1,6 +1,7 @@
 import { createApp } from "./app.js";
 import { env } from "./env.js";
 import { disconnectPrisma } from "./prisma.js";
+import { disconnectCatalog } from "./catalog/search.js";
 
 const app = createApp();
 const server = app.listen(env.port, () => {
@@ -11,7 +12,7 @@ const server = app.listen(env.port, () => {
 for (const signal of ["SIGINT", "SIGTERM"] as const) {
   process.on(signal, () => {
     server.close(() => {
-      void disconnectPrisma().finally(() => process.exit(0));
+      void Promise.allSettled([disconnectPrisma(), disconnectCatalog()]).finally(() => process.exit(0));
     });
   });
 }

@@ -7,6 +7,7 @@ import { errorHandler, notFoundHandler } from "./middleware/error.js";
 import { healthRouter } from "./routes/health.js";
 import { booksRouter } from "./routes/books.js";
 import { meRouter } from "./routes/me.js";
+import { catalogRouter } from "./routes/catalog.js";
 
 /**
  * Uygulamayı kurar ama dinlemeye başlamaz — testlerde de aynı örnek kullanılır.
@@ -27,6 +28,7 @@ export function createApp(): Express {
   app.use(healthRouter);
   app.use("/api/me", requireAuth, meRouter);
   app.use("/api/books", requireAuth, booksRouter);
+  app.use("/api/catalog", requireAuth, catalogRouter);
 
   app.use(notFoundHandler);
   app.use(errorHandler);

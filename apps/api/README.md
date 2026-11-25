@@ -78,6 +78,8 @@ ayar yok sayılır.
 | GET | `/api/books/:bookId` | Tek kitap |
 | PATCH | `/api/books/:bookId` | Kitabı günceller |
 | DELETE | `/api/books/:bookId` | Kitabı siler |
+| GET | `/api/catalog/search?q=…&limit=8` | Kitap kataloğunda başlık/yazar/ISBN araması (en fazla 20) |
+| GET | `/api/catalog/isbn/:isbn` | ISBN-10 ya da 13 ile katalog kaydı |
 | GET | `/api/books/:bookId/quotes` | Alıntılar |
 | POST | `/api/books/:bookId/quotes` | Alıntı ekler |
 | PATCH | `/api/books/:bookId/quotes/:quoteId` | Alıntıyı günceller |
@@ -111,3 +113,43 @@ olmayan kullanıcıların verisi taşınmaz.
 Web uygulaması kitap verisini hâlâ doğrudan Firestore'dan okuyor. Sıradaki
 adım `booksSlice` ve `accountData`'yı bu uçlara bağlamak, ardından API'yi ve
 veritabanını bir barındırma ortamına almak.
+
+## Kitap kataloğu (Open Library)
+
+Kitap eklerken yapılan arama Google Books yerine kendi kataloğumuzdan gelir
+(`/api/catalog`). Katalog, Open Library'nin aylık ücretsiz (CC0) dump'larından
+üretilir: Türkçe ve İngilizce, ISBN'li baskılar, her eser + dil için tek kayıt.
+Türkçe kayıtların hepsi, İngilizceler Open Library'de en çok okunan/puanlanan
+eserden başlayarak varsayılan 750 bin kayda kadar alınır.
+
+Dump'ları indirmeden geliştirme için repoda gerçek Open Library verisinden
+~700 kitaplık bir örnek var (`catalog-sample/`, ~390 TR + ~320 EN, en çok
+okunanlar ve klasik Türk yazarları):
+
+```bash
+pnpm --filter @shelfie/api catalog:load:sample   # yerel DATABASE_URL'e catalog_books kurar
+```
+
+Tam katalog:
+
+```bash
+pnpm --filter @shelfie/api catalog:download   # ~13 GB, apps/api/data/openlibrary (git'e girmez)
+pnpm --filter @shelfie/api catalog:build      # → data/catalog.tsv.gz (20-40 dk, ~4 GB RAM)
+pnpm --filter @shelfie/api catalog:load       # → CATALOG_DATABASE_URL'deki catalog_books tablosu
+```
+
+- **Ayrı veritabanı:** Neon free planında proje başına 1 GB sınır var ve dolunca
+  yazma durur. Katalog bu yüzden ayrı bir Neon projesinde durur:
+  `CATALOG_DATABASE_URL` (ve yükleme için `CATALOG_DATABASE_URL_UNPOOLED`).
+  Yerelde boş bırakılırsa `DATABASE_URL` kullanılır. Render'a da
+  `CATALOG_DATABASE_URL` eklenmeli.
+- **Boyut:** satır başına ~450 B (tablo + indeks); 750k ≈ 350 MB.
+  `catalog:build -- --limit 500000` ile küçültülebilir.
+- **Yenileme:** komutlar aylık tekrar çalıştırılabilir. Yükleme yeni tabloyu
+  hazırlayıp tek transaction'da değiştirir, arama kesilmez. O sırada iki tablo
+  birden yer kapladığı için depolama yetmezse `catalog:load -- --drop-first`.
+- **Arama:** `pg_trgm` kelime benzerliği; metin `foldForSearch` ile katlanır
+  (İ/ı/ş/ğ/ç/ö/ü farkı yok, "kurk mantolu" → Kürk Mantolu Madonna). 10/13
+  haneli sorgular ISBN olarak aranır.
+- **Kapaklar:** `covers.openlibrary.org/b/id/{cover_id}-M.jpg`. Görseller
+  Open Library'den gelir, veritabanında yalnızca kapak numarası durur.

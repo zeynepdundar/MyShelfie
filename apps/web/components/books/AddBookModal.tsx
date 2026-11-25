@@ -1,15 +1,14 @@
 'use client';
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import type { GoogleBook } from "@shelfie/types";
 import { AddBookModalProps } from "@/types/component-props";
 import { BookCover } from "@/components/books/BookCover";
 import {
-  GoogleBooksError,
-  MissingApiKeyError,
-  hasGoogleBooksKey,
-  searchGoogleBooks,
-} from "@/lib/googleBooks";
+  type BookSearchResult,
+  hasBookSearch,
+  isTransientSearchError,
+  searchBooks as searchBookSources,
+} from "@/lib/bookSearch";
 import { Search, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { BookStatusKey } from "@/lib/bookStatus";
@@ -24,10 +23,10 @@ export function AddBookModal({
   const statusT = useTranslations("book.status");
   const [activeTab, setActiveTab] = useState<'form' | 'search'>('form');
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<GoogleBook[]>([]);
+  const [searchResults, setSearchResults] = useState<BookSearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
-  const [selectedBook, setSelectedBook] = useState<GoogleBook | null>(null);
+  const [selectedBook, setSelectedBook] = useState<BookSearchResult | null>(null);
   const [showDateForm, setShowDateForm] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
@@ -59,16 +58,12 @@ export function AddBookModal({
     setIsSearching(true);
     setSearchError(null);
     try {
-      setSearchResults(await searchGoogleBooks(searchQuery));
+      setSearchResults(await searchBookSources(searchQuery.trim()));
     } catch (error) {
       console.error('Kitap arama hatası:', error);
       setSearchResults([]);
       setSearchError(
-        error instanceof MissingApiKeyError
-          ? t("search.missingKey")
-          : error instanceof GoogleBooksError && error.isTransient
-            ? t("search.busy")
-            : t("search.error")
+        isTransientSearchError(error) ? t("search.busy") : t("search.error")
       );
     } finally {
       setIsSearching(false);
@@ -80,7 +75,7 @@ export function AddBookModal({
     searchBooks();
   };
 
-  const handleSelectBook = (book: GoogleBook) => {
+  const handleSelectBook = (book: BookSearchResult) => {
     setSelectedBook(book);
     setShowDateForm(true);
   };
@@ -91,15 +86,17 @@ export function AddBookModal({
     if (!selectedBook) return;
 
     const bookData = {
-      title: selectedBook.volumeInfo.title,
-      author: selectedBook.volumeInfo.authors?.join(', ') || t("unknownAuthor"),
-      pages: selectedBook.volumeInfo.pageCount || 0,
+      title: selectedBook.title,
+      author: selectedBook.authors.join(', ') || t("unknownAuthor"),
+      pages: selectedBook.pages || 0,
+      ...(selectedBook.isbn && { isbn: selectedBook.isbn }),
+      ...(selectedBook.publishedYear && { publishedYear: selectedBook.publishedYear }),
       ...(formData.status !== "wantToRead" && { startDate: formData.startDate }),
       ...(formData.status === "completed" && { endDate: formData.endDate }),
       dateRead: formData.status === "completed" ? formData.endDate : null,
       isCompleted: formData.status === "completed",
       wantToRead: formData.status === "wantToRead",
-      coverUrl: selectedBook.volumeInfo.imageLinks?.thumbnail || undefined,
+      coverUrl: selectedBook.coverUrl || undefined,
       dateAdded: new Date().toISOString().split('T')[0]
     };
 
@@ -216,18 +213,18 @@ export function AddBookModal({
               <div className="sf-tile">
                 <div className="flex gap-3">
                   <BookCover
-                    src={selectedBook.volumeInfo.imageLinks?.thumbnail}
-                    alt={selectedBook.volumeInfo.title}
+                    src={selectedBook.coverUrl}
+                    alt={selectedBook.title}
                     size="md"
                   />
                   <div className="min-w-0 flex-1">
-                    <h3 className="truncate">{selectedBook.volumeInfo.title}</h3>
+                    <h3 className="truncate">{selectedBook.title}</h3>
                     <p className="sf-body truncate">
-                      {selectedBook.volumeInfo.authors?.join(', ') || t("unknownAuthor")}
+                      {selectedBook.authors.join(', ') || t("unknownAuthor")}
                     </p>
-                    {selectedBook.volumeInfo.pageCount && (
+                    {selectedBook.pages && (
                       <p className="sf-meta">
-                        {t("pageCount", { count: selectedBook.volumeInfo.pageCount })}
+                        {t("pageCount", { count: selectedBook.pages })}
                       </p>
                     )}
                   </div>
@@ -409,7 +406,7 @@ export function AddBookModal({
                       />
                       <Button
                         type="submit"
-                        disabled={isSearching || !hasGoogleBooksKey}
+                        disabled={isSearching || !hasBookSearch}
                         className="shrink-0"
                       >
                         <Search className="mr-2 h-4 w-4" />
@@ -418,11 +415,11 @@ export function AddBookModal({
                     </div>
                   </form>
 
-                  {!hasGoogleBooksKey && (
+                  {!hasBookSearch && (
                     <div className="sf-alert-error">{t("search.missingKey")}</div>
                   )}
 
-                  {searchError && hasGoogleBooksKey && (
+                  {searchError && hasBookSearch && (
                     <div className="sf-alert-error">{searchError}</div>
                   )}
 
@@ -438,18 +435,18 @@ export function AddBookModal({
                         >
                           <div className="flex gap-3">
                             <BookCover
-                              src={book.volumeInfo.imageLinks?.thumbnail}
-                              alt={book.volumeInfo.title}
+                              src={book.coverUrl}
+                              alt={book.title}
                               size="md"
                             />
                             <div className="min-w-0 flex-1">
-                              <h3 className="truncate">{book.volumeInfo.title}</h3>
+                              <h3 className="truncate">{book.title}</h3>
                               <p className="sf-body truncate">
-                                {book.volumeInfo.authors?.join(', ') || t("unknownAuthor")}
+                                {book.authors.join(', ') || t("unknownAuthor")}
                               </p>
-                              {book.volumeInfo.pageCount && (
+                              {book.pages && (
                                 <p className="sf-meta">
-                                  {t("pageCount", { count: book.volumeInfo.pageCount })}
+                                  {t("pageCount", { count: book.pages })}
                                 </p>
                               )}
                             </div>

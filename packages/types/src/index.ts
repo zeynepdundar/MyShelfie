@@ -1,1 +1,1 @@
-export type { Book, Quote, GoogleBook } from "./book";
+export type { Book, Quote, GoogleBook, CatalogBook } from "./book";

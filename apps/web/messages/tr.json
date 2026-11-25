@@ -153,7 +153,7 @@
   },
   "addBook": {
     "title": "Yeni Kitap Ekle",
-    "subtitle": "Elle ekle ya da Google Books'ta ara.",
+    "subtitle": "Elle ekle ya da kitap kataloğunda ara.",
     "close": "Kapat",
     "tabs": {
       "manual": "Manuel Ekle",
@@ -181,8 +181,8 @@
       "results": "Arama Sonuçları",
       "noResults": "Kitap bulunamadı",
       "error": "Arama şu anda yapılamadı. Lütfen sonra tekrar deneyin.",
-      "missingKey": "Kitap arama kapalı: Google Books API anahtarı tanımlı değil.",
-      "busy": "Google Books şu anda yoğun. Birkaç saniye sonra tekrar dener misin?"
+      "missingKey": "Kitap arama kapalı: NEXT_PUBLIC_API_URL (kitap kataloğu) ya da Google Books API anahtarı tanımlı değil.",
+      "busy": "Kitap arama şu anda yoğun. Birkaç saniye sonra tekrar dener misin?"
     },
     "unknownAuthor": "Bilinmeyen Yazar",
     "pageCount": "{count} sayfa",

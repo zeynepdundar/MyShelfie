@@ -48,3 +48,6 @@ next-env.d.ts
 
 # prisma (pnpm install / prisma generate ile üretilir)
 apps/api/src/generated/
+
+# Open Library dump'ları ve üretilen katalog (çok büyük)
+apps/api/data/

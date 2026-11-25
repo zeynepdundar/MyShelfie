@@ -17,7 +17,11 @@
     "db:studio:neon": "node --env-file=../../.env.local ../../node_modules/prisma/build/index.js studio",
     "db:reset": "prisma migrate reset",
     "db:studio": "prisma studio",
-    "migrate:firestore": "tsx src/scripts/migrate-firestore.ts"
+    "migrate:firestore": "tsx src/scripts/migrate-firestore.ts",
+    "catalog:download": "bash scripts/download-openlibrary.sh",
+    "catalog:build": "node --max-old-space-size=6144 --import tsx src/scripts/catalog/build.ts",
+    "catalog:load": "tsx src/scripts/catalog/load.ts",
+    "catalog:load:sample": "tsx src/scripts/catalog/load.ts --file catalog-sample/catalog.sample.tsv.gz"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.10.0",
@@ -27,12 +31,14 @@
     "dotenv": "^16.4.7",
     "express": "^5.0.1",
     "firebase-admin": "^13.0.1",
+    "pg": "^8.23.1",
     "zod": "^3.24.1"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.6",
     "@types/node": "^20",
+    "@types/pg": "^8.23.1",
     "prisma": "^7.10.0",
     "tsx": "^4.19.2",
     "typescript": "^5"

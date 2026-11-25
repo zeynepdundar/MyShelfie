@@ -23,10 +23,10 @@ import { BookCard } from "@/components/books/BookCard";
 import { BookCover } from "@/components/books/BookCover";
 import { booksToCsv, downloadCsv } from "@/lib/exportCsv";
 import {
-  GoogleBooksError,
-  findBookCover,
-  hasGoogleBooksKey,
-} from "@/lib/googleBooks";
+  findCover,
+  hasBookSearch,
+  isTransientSearchError,
+} from "@/lib/bookSearch";
 import {
   EmptyState,
   GlassCard,
@@ -64,17 +64,17 @@ export function LibraryPage({ user }: LibraryPageProps) {
   const [showAddBookModal, setShowAddBookModal] = useState(false);
   const [coverCache, setCoverCache] = useState<Record<string, string>>({});
   const attemptedCovers = useRef<Set<string>>(new Set());
-  // Google geçici olarak yanıt vermiyorsa bu oturumda kapak aramayı bırak.
+  // Arama kaynağı geçici olarak yanıt vermiyorsa bu oturumda kapak aramayı bırak.
   const coverLookupPaused = useRef(false);
 
   useEffect(() => {
     if (user) dispatch(fetchUserBooks());
   }, [user, dispatch]);
 
-  // Kapağı olmayan kitaplar için Google Books'tan bir kez kapak aranır.
+  // Kapağı olmayan kitaplar için katalogda (yoksa Google Books'ta) bir kez kapak aranır.
   // Denenen kitaplar işaretlenir; başarısız aramalar döngüye girmesin.
   useEffect(() => {
-    if (!hasGoogleBooksKey || coverLookupPaused.current) return;
+    if (!hasBookSearch || coverLookupPaused.current) return;
 
     books.forEach((book) => {
       if (book.coverUrl || coverCache[book.id]) return;
@@ -91,7 +91,7 @@ export function LibraryPage({ user }: LibraryPageProps) {
     bookId: string
   ) => {
     try {
-      const coverUrl = await findBookCover(title, author);
+      const coverUrl = await findCover(title, author);
       if (!coverUrl) return;
 
       setCoverCache((prev) =>
@@ -100,7 +100,7 @@ export function LibraryPage({ user }: LibraryPageProps) {
       dispatch(updateBook({ bookId, updates: { coverUrl } }));
     } catch (fetchError) {
       // Kapak araması sayfanın çalışması için kritik değil: sessizce vazgeç.
-      if (fetchError instanceof GoogleBooksError && fetchError.isTransient) {
+      if (isTransientSearchError(fetchError)) {
         coverLookupPaused.current = true;
       }
       console.warn("Kapak bulunamadı:", fetchError);
