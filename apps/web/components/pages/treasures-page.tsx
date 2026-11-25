@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
-import { useDispatch, useSelector } from 'react-redux';
 import {
   ChevronDown,
   ChevronLeft,
@@ -14,10 +13,8 @@ import {
   X,
 } from 'lucide-react';
 
-import { AppDispatch, RootState } from '@/lib/store';
 import { formatDate } from "@/lib/format";
-import { addQuote as addQuoteToBook, fetchUserBooks, updateBook } from '@/lib/booksSlice';
-import { AuthUser } from '@/lib/authSlice';
+import { useAddQuote, useBooks, useUpdateBook } from '@/lib/booksQueries';
 import type { Quote } from '@shelfie/types';
 import { Button } from '@/components/ui/button';
 import { BookCard } from '@/components/books/BookCard';
@@ -30,22 +27,19 @@ import {
   StatCard,
 } from '@/components/ui/glass';
 
-interface TreasuresPageProps {
-  user: AuthUser | null;
-}
-
 type QuoteWithBook = Quote & { bookTitle?: string; bookAuthor?: string };
 
 /** Alıntılar kademeli gösterilir: önce bu kadar, sonra her tıkta bir o kadar daha. */
 const QUOTES_PAGE_SIZE = 12;
 
 
-export function TreasuresPage({ user }: TreasuresPageProps) {
+export function TreasuresPage() {
   const t = useTranslations('treasures');
   const locale = useLocale();
   const statusT = useTranslations('book.status');
-  const dispatch = useDispatch<AppDispatch>();
-  const { books, status } = useSelector((state: RootState) => state.books);
+  const { books, isLoading } = useBooks();
+  const updateBook = useUpdateBook();
+  const addQuoteToBook = useAddQuote();
 
   const shelfRef = useRef<HTMLDivElement>(null);
   const quotesRef = useRef<HTMLDivElement>(null);
@@ -60,12 +54,6 @@ export function TreasuresPage({ user }: TreasuresPageProps) {
   const [saveError, setSaveError] = useState<string | null>(null);
   const [justAddedId, setJustAddedId] = useState<string | null>(null);
   const [visibleQuoteCount, setVisibleQuoteCount] = useState(QUOTES_PAGE_SIZE);
-
-  useEffect(() => {
-    if (user) {
-      dispatch(fetchUserBooks());
-    }
-  }, [dispatch, user]);
 
   const favoriteBooks = useMemo(
     () => books.filter((book) => book.isFavorite),
@@ -164,15 +152,9 @@ export function TreasuresPage({ user }: TreasuresPageProps) {
     });
   };
 
-  const toggleFavorite = async (bookId: string, currentFavorite: boolean) => {
-    try {
-      await dispatch(
-        updateBook({ bookId, updates: { isFavorite: !currentFavorite } }),
-      );
-    } catch (error) {
-      console.error('Error updating favorite status:', error);
-    }
-  };
+  // İyimser güncelleme: kalp hemen değişir, istek başarısız olursa geri alınır.
+  const toggleFavorite = (bookId: string, currentFavorite: boolean) =>
+    updateBook.mutate({ bookId, updates: { isFavorite: !currentFavorite } });
 
   const addQuote = async () => {
     if (!selectedBook || !quoteText.trim()) return;
@@ -183,17 +165,15 @@ export function TreasuresPage({ user }: TreasuresPageProps) {
     setIsSaving(true);
     setSaveError(null);
     try {
-      // unwrap(): thunk reddedilirse hata fırlatır, catch'e düşer.
-      const { quote } = await dispatch(
-        addQuoteToBook({
-          bookId: selectedBook.id,
-          quote: {
-            text: quoteText.trim(),
-            page: Number.isNaN(parsedPage) ? undefined : parsedPage,
-            notes: trimmedNotes || undefined,
-          },
-        }),
-      ).unwrap();
+      // mutateAsync: istek başarısız olursa hata fırlatır, catch'e düşer.
+      const quote = await addQuoteToBook.mutateAsync({
+        bookId: selectedBook.id,
+        quote: {
+          text: quoteText.trim(),
+          page: Number.isNaN(parsedPage) ? undefined : parsedPage,
+          notes: trimmedNotes || undefined,
+        },
+      });
       closeQuoteForm();
       setJustAddedId(quote.id);
       window.setTimeout(() => {
@@ -211,7 +191,7 @@ export function TreasuresPage({ user }: TreasuresPageProps) {
   };
 
   // Sadece ilk yüklemede tam sayfa loader; kayıt sırasında modal açık kalsın.
-  if (status === 'loading' && books.length === 0) {
+  if (isLoading) {
     return <PageLoading label={t('loading')} />;
   }
 

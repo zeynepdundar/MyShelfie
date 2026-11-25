@@ -10,10 +10,9 @@ import {
   XAxis,
   YAxis,
 } from "recharts"
-import { useSelector } from "react-redux"
 import { useLocale, useTranslations } from "next-intl"
 
-import { RootState } from "@/lib/store"
+import { useBooks } from "@/lib/booksQueries"
 import type { Book } from "@shelfie/types"
 import { ChartContainer } from "@/components/ui/chart"
 import { isBookFinished } from "@/lib/bookStatus"
@@ -35,7 +34,7 @@ function getBookDate(book: Book) {
 }
 
 export function MyChart({ year }: { year: number }) {
-  const { books } = useSelector((state: RootState) => state.books)
+  const { books } = useBooks()
   const t = useTranslations("stats.chart")
   const locale = useLocale()
   const [activeIndex, setActiveIndex] = useState<number | null>(null)

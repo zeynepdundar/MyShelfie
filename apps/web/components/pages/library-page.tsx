@@ -13,11 +13,9 @@ import {
 } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 
-import type { AuthUser } from "@/lib/authSlice";
 import { formatDate } from "@/lib/format";
 import type { Book } from "@shelfie/types";
-import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import { addBook, fetchUserBooks, updateBook } from "@/lib/booksSlice";
+import { useAddBook, useBooks, useUpdateBook } from "@/lib/booksQueries";
 import { Button } from "@/components/ui/button";
 import { AddBookModal } from "@/components/books/AddBookModal";
 import { ImportCsvModal } from "@/components/books/ImportCsvModal";
@@ -37,10 +35,6 @@ import {
 } from "@/components/ui/glass";
 import { isBookFinished } from "@/lib/bookStatus";
 
-interface LibraryPageProps {
-  user: AuthUser | null;
-}
-
 type ReadingFilter = "all" | "inProgress" | "completed";
 
 const READING_FILTERS: ReadingFilter[] = ["all", "inProgress", "completed"];
@@ -51,15 +45,20 @@ function today() {
 }
 
 
-export function LibraryPage({ user }: LibraryPageProps) {
+export function LibraryPage() {
   const t = useTranslations("library");
   const locale = useLocale();
   const errorT = useTranslations("errors.books");
   const navT = useTranslations("nav");
   const statusT = useTranslations("book.status");
 
-  const dispatch = useAppDispatch();
-  const { books, status, error } = useAppSelector((state) => state.books);
+  const { books, isLoading, error: fetchError } = useBooks();
+  const addBook = useAddBook();
+  const updateBook = useUpdateBook();
+  // Son başarısız işlemin hata kodu (messages › errors.books).
+  const error =
+    fetchError ??
+    (addBook.isError ? "addFailed" : updateBook.isError ? "updateFailed" : null);
 
   const [filter, setFilter] = useState<ReadingFilter>("all");
   const [showWantToRead, setShowWantToRead] = useState(true);
@@ -69,10 +68,6 @@ export function LibraryPage({ user }: LibraryPageProps) {
   const attemptedCovers = useRef<Set<string>>(new Set());
   // Arama kaynağı geçici olarak yanıt vermiyorsa bu oturumda kapak aramayı bırak.
   const coverLookupPaused = useRef(false);
-
-  useEffect(() => {
-    if (user) dispatch(fetchUserBooks());
-  }, [user, dispatch]);
 
   // Kapağı olmayan kitaplar için katalogda (yoksa Google Books'ta) bir kez kapak aranır.
   // Denenen kitaplar işaretlenir; başarısız aramalar döngüye girmesin.
@@ -100,7 +95,7 @@ export function LibraryPage({ user }: LibraryPageProps) {
       setCoverCache((prev) =>
         prev[bookId] ? prev : { ...prev, [bookId]: coverUrl }
       );
-      dispatch(updateBook({ bookId, updates: { coverUrl } }));
+      updateBook.mutate({ bookId, updates: { coverUrl } });
     } catch (fetchError) {
       // Kapak araması sayfanın çalışması için kritik değil: sessizce vazgeç.
       if (isTransientSearchError(fetchError)) {
@@ -148,36 +143,32 @@ export function LibraryPage({ user }: LibraryPageProps) {
 
   /** İstek listesinden çıkarır ve okumaya başlama tarihini yazar. */
   const startReading = (bookId: string) =>
-    dispatch(
-      updateBook({
-        bookId,
-        updates: { wantToRead: false, startDate: today() },
-      })
-    );
+    updateBook.mutate({
+      bookId,
+      updates: { wantToRead: false, startDate: today() },
+    });
 
   const markAsFinished = (bookId: string) =>
-    dispatch(
-      updateBook({
-        bookId,
-        updates: { isCompleted: true, endDate: today(), dateRead: today() },
-      })
-    );
+    updateBook.mutate({
+      bookId,
+      updates: { isCompleted: true, endDate: today(), dateRead: today() },
+    });
 
   const toggleFavorite = (bookId: string, currentFavorite: boolean) =>
-    dispatch(updateBook({ bookId, updates: { isFavorite: !currentFavorite } }));
+    updateBook.mutate({ bookId, updates: { isFavorite: !currentFavorite } });
 
   const handleAddBookSubmit = async (
     newBook: Omit<Book, "id" | "dateAdded">
   ) => {
     try {
-      await dispatch(addBook(newBook)).unwrap();
+      await addBook.mutateAsync(newBook);
       setShowAddBookModal(false);
     } catch (addError) {
       console.error("Kitap eklenirken hata oluştu:", addError);
     }
   };
 
-  if (status === "loading" && books.length === 0) {
+  if (isLoading) {
     return <PageLoading label={navT("checkingSession")} />;
   }
 
@@ -207,9 +198,9 @@ export function LibraryPage({ user }: LibraryPageProps) {
           </div>
         </header>
 
-        {status === "failed" && (
+        {error && (
           <div className="sf-alert-error">
-            {error && errorT.has(error) ? errorT(error) : errorT("unknown")}
+            {errorT.has(error) ? errorT(error) : errorT("unknown")}
           </div>
         )}
 
@@ -433,7 +424,6 @@ export function LibraryPage({ user }: LibraryPageProps) {
           isOpen={showImportModal}
           onClose={() => setShowImportModal(false)}
           existingBooks={books}
-          onImported={() => void dispatch(fetchUserBooks())}
         />
       )}
 

@@ -22,7 +22,6 @@ export default function Home() {
   const [startingGuest, setStartingGuest] = useState(false);
   const [guestError, setGuestError] = useState<string | null>(null);
 
-  const user = useSelector((state: RootState) => state.auth.user);
   const isAuthenticated = useSelector(
     (state: RootState) => state.auth.status === "authenticated"
   );
@@ -46,7 +45,7 @@ export default function Home() {
   }
 
   if (isAuthenticated) {
-    return <LibraryPage user={user} />;
+    return <LibraryPage />;
   }
 
   if (showAuth) {

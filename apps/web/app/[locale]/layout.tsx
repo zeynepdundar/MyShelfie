@@ -4,6 +4,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getTranslations } from 'next-intl/server';
 import ReduxProvider from '@/components/providers/redux-provider';
 import { AuthProvider } from '@/components/providers/auth-provider';
+import { QueryProvider } from '@/components/providers/query-provider';
 import '../globals.css';
 import { HomeLayout } from "@/components/layout/HomeLayout";
 
@@ -75,9 +76,11 @@ export default async function RootLayout({
       <body className="font-sans">
         <NextIntlClientProvider locale={locale} messages={messages}>
           <ReduxProvider>
-            <AuthProvider>
-              <HomeLayout>{children}</HomeLayout>
-            </AuthProvider>
+            <QueryProvider>
+              <AuthProvider>
+                <HomeLayout>{children}</HomeLayout>
+              </AuthProvider>
+            </QueryProvider>
           </ReduxProvider>
         </NextIntlClientProvider>
       </body>

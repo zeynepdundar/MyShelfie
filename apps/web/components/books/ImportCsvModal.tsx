@@ -5,7 +5,7 @@ import { CheckCircle2, FileUp, X } from "lucide-react";
 import type { Book } from "@shelfie/types";
 
 import { Button } from "@/components/ui/button";
-import { booksRepo } from "@/lib/booksRepo";
+import { useImportBooks } from "@/lib/booksQueries";
 import {
   CsvFormatError,
   IMPORT_LIMIT,
@@ -18,8 +18,6 @@ interface ImportCsvModalProps {
   onClose: () => void;
   /** Kütüphanedeki kitaplar: aynı kitap ikinci kez eklenmesin. */
   existingBooks: Book[];
-  /** İçe aktarma bitince listeyi yenilemek için. */
-  onImported: (count: number) => void;
 }
 
 type Step =
@@ -31,8 +29,10 @@ type Step =
 /** MB; API gövde sınırı 5 MB, CSV'nin JSON'u biraz daha büyük olur. */
 const MAX_FILE_MB = 3;
 
-export function ImportCsvModal({ isOpen, onClose, existingBooks, onImported }: ImportCsvModalProps) {
+export function ImportCsvModal({ isOpen, onClose, existingBooks }: ImportCsvModalProps) {
   const t = useTranslations("importCsv");
+  // Bitince kitap listesi kendiliğinden yeniden çekilir (booksQueries).
+  const importBooks = useImportBooks();
   const inputRef = useRef<HTMLInputElement>(null);
   const [step, setStep] = useState<Step>({ kind: "pick" });
   const [error, setError] = useState<string | null>(null);
@@ -66,9 +66,8 @@ export function ImportCsvModal({ isOpen, onClose, existingBooks, onImported }: I
     setStep({ kind: "importing" });
     setError(null);
     try {
-      const count = await booksRepo.importBooks(preview.books);
+      const count = await importBooks.mutateAsync(preview.books);
       setStep({ kind: "done", count });
-      onImported(count);
     } catch (err) {
       console.error("[importCsv]", err);
       // İstek tek transaction: başarısızsa hiçbir kitap eklenmedi.

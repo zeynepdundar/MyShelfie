@@ -5,7 +5,7 @@ import type { ImportBook } from "@/lib/importCsv";
 
 /* ============================================================================
    Kitap verisine erişim — tek kapı
-   booksSlice yalnızca bu arayüzü bilir. Veri apps/api üzerinden Postgres'te
+   lib/booksQueries.ts yalnızca bu arayüzü bilir. Veri apps/api üzerinden Postgres'te
    durur (NEXT_PUBLIC_API_URL zorunlu). Firestore artık kullanılmıyor; eski
    kayıtlar migrate:firestore ile taşındı, kalıntıları hesap silinirken API siler.
    ========================================================================== */

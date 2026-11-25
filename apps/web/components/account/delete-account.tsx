@@ -1,18 +1,16 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import { useSelector } from "react-redux";
 import { useLocale, useTranslations } from "next-intl";
 import { AlertTriangle, Download, Trash2, X } from "lucide-react";
 
-import type { RootState } from "@/lib/store";
 import { useAppDispatch } from "@/lib/hooks";
 import {
   deleteAccount,
   deleteVerificationFor,
   type AuthUser,
 } from "@/lib/authSlice";
-import { clearBooks } from "@/lib/booksSlice";
+import { useBooks } from "@/lib/booksQueries";
 import { ACCOUNT_DELETED_FLAG, downloadUserData } from "@/lib/accountData";
 import { Button } from "@/components/ui/button";
 import { GlassCard, SectionHeader } from "@/components/ui/glass";
@@ -34,7 +32,7 @@ const ERROR_KEYS: Record<string, string> = {
 /** "Verilerini indir" + "Hesabı sil" satırları; hesap sayfasının en altında durur. */
 export function AccountDataSection({ user }: { user: AuthUser }) {
   const t = useTranslations("account.danger");
-  const books = useSelector((state: RootState) => state.books.books);
+  const { books } = useBooks();
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const download = () =>
@@ -154,8 +152,8 @@ function DeleteAccountDialog({
     setError(null);
 
     try {
+      // Oturum kapanınca AuthProvider sorgu önbelleğini de temizler.
       await dispatch(deleteAccount({ password })).unwrap();
-      dispatch(clearBooks());
       try {
         sessionStorage.setItem(ACCOUNT_DELETED_FLAG, "1");
       } catch {

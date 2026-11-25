@@ -1,10 +1,8 @@
 'use client';
 
-import { useEffect, useMemo, useState } from "react";
-import { AuthUser } from "@/lib/authSlice";
+import { useMemo, useState } from "react";
 import type { Book } from "@shelfie/types";
-import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import { fetchUserBooks } from "@/lib/booksSlice";
+import { useBooks } from "@/lib/booksQueries";
 import { CalendarDays } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import { MyChart } from "../books/chartx";
@@ -15,10 +13,6 @@ import {
   StatCard,
 } from "@/components/ui/glass";
 import { isBookFinished } from "@/lib/bookStatus";
-
-interface StatsPageProps {
-  user: AuthUser | null;
-}
 
 
 function getRelevantDate(book: Book) {
@@ -37,23 +31,16 @@ function getBookDate(book: Book) {
   return Number.isNaN(parsedDate.getTime()) ? null : parsedDate;
 }
 
-export function StatsPage({ user }: StatsPageProps) {
+export function StatsPage() {
   const t = useTranslations("stats");
   const locale = useLocale();
   const errorT = useTranslations("errors.books");
   const navT = useTranslations("nav");
 
-  const dispatch = useAppDispatch();
-  const { books, status, error } = useAppSelector((state) => state.books);
+  const { books, isLoading, error } = useBooks();
   const [selectedYear, setSelectedYear] = useState(() => new Date().getFullYear());
 
   const currentYear = new Date().getFullYear();
-
-  useEffect(() => {
-    if (user) {
-      dispatch(fetchUserBooks());
-    }
-  }, [user, dispatch]);
 
   const availableYears = useMemo(() => {
     const years = new Set<number>([currentYear]);
@@ -86,7 +73,7 @@ export function StatsPage({ user }: StatsPageProps) {
     ? Math.round(pagesThisSelectedYear / selectedYearCompletedBooks.length)
     : 0;
 
-  if (status === "loading") {
+  if (isLoading) {
     return <PageLoading label={navT("checkingSession")} />;
   }
 
@@ -136,9 +123,9 @@ export function StatsPage({ user }: StatsPageProps) {
           ))}
         </div>
 
-        {status === "failed" && (
+        {error && (
           <div className="sf-alert-error">
-            {error && errorT.has(error) ? errorT(error) : errorT("unknown")}
+            {errorT.has(error) ? errorT(error) : errorT("unknown")}
           </div>
         )}
 

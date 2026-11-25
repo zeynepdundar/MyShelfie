@@ -10,7 +10,7 @@ import { Check, LogOut, Pencil, X } from "lucide-react";
 import type { RootState } from "@/lib/store";
 import { useAppDispatch } from "@/lib/hooks";
 import { signOutUser, updateDisplayName } from "@/lib/authSlice";
-import { fetchUserBooks } from "@/lib/booksSlice";
+import { useBooks } from "@/lib/booksQueries";
 import { Button } from "@/components/ui/button";
 import { GlassCard, SectionHeader } from "@/components/ui/glass";
 import { AuthPanel } from "@/components/auth/auth-panel";
@@ -175,14 +175,9 @@ export function AccountPage() {
   const dispatch = useAppDispatch();
 
   const user = useSelector((state: RootState) => state.auth.user);
-  const books = useSelector((state: RootState) => state.books.books);
-
-  // Sayfa doğrudan açıldığında (yenileme, link) kitaplar henüz yüklenmemiş
-  // olabilir; tamamlanan sayısı ve silme penceresindeki kitap sayısı buna bağlı.
-  const uid = user?.uid;
-  useEffect(() => {
-    if (uid) dispatch(fetchUserBooks());
-  }, [uid, dispatch]);
+  // Sayfa doğrudan açılsa da (yenileme, link) kitaplar sorgudan gelir;
+  // tamamlanan sayısı ve silme penceresindeki kitap sayısı buna bağlı.
+  const { books } = useBooks();
 
   if (!user) return null;
 

@@ -16,6 +16,7 @@
     "@radix-ui/react-slot": "^1.2.3",
     "@reduxjs/toolkit": "^2.8.2",
     "@shelfie/types": "workspace:*",
+    "@tanstack/react-query": "^5.108.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "firebase": "^12.1.0",
@@ -30,6 +31,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@tanstack/react-query-devtools": "^5.108.4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

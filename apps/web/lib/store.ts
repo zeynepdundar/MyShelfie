@@ -1,11 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "./authSlice";
-import booksReducer from "./booksSlice";
 
+/* Redux yalnızca oturum durumunu tutar. Kitap verisi TanStack Query'de
+   (lib/booksQueries.ts). */
 export const store = configureStore({
   reducer: {
     auth: authReducer,
-    books: booksReducer,
   },
   devTools: process.env.NODE_ENV !== "production",
 });
